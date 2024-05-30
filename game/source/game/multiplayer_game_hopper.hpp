@@ -30,8 +30,8 @@ struct c_hopper_configuration
 	c_enum<e_hopper_type, long, _hopper_type_ffa_unranked, k_hopper_type_count> hopper_type;
 	long image_index;
 	long xlast_index;
-	long rich_presence_id;
-	long _unk_pad;
+	byte rich_presence_id;
+	byte __data49[0x7];
 	s_file_last_modification_date start_time;
 	s_file_last_modification_date end_time;
 	long hopper_regions;
@@ -221,6 +221,7 @@ extern word __cdecl multiplayer_game_hopper_get_hopper_identifier(long index);
 extern bool __cdecl multiplayer_game_hopper_is_hopper_visible(word, c_network_session_membership const*);
 extern int __cdecl multiplayer_game_hopper_game_set_load_status();
 extern char __cdecl network_leaderboard_player_stats_valid(s_network_session_player* player);
+extern char const* __cdecl multiplayer_game_start_error_to_string(e_session_game_start_error error);
 
 extern void __cdecl network_build_game_variant(char const* filename);
 extern void __cdecl network_load_and_use_game_variant_file(char const* filename);

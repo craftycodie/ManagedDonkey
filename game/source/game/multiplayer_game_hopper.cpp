@@ -52,12 +52,10 @@ void __cdecl initialize_fake_hopper(
 
 //.text:00544AC0 ; void __cdecl initialize_fake_hopper(s_hopper_configuration_table*, s_game_hopper_description_table*, s_game_set*, s_game_set*);
 //.text:00545700 ; e_network_file_load_status __cdecl multiplayer_game_hopper_catalog_load_status();
-
-
-__int64 transport_secure_address_get_local_machine_id() {
-	return 1;
+int __cdecl multiplayer_game_hopper_catalog_load_status() {
+	return 2;
 }
-HOOK_DECLARE(0x00430C10, transport_secure_address_get_local_machine_id);
+HOOK_DECLARE(0x00545700, multiplayer_game_hopper_catalog_load_status);
 
 //.text:00545710 ; e_session_game_start_error __cdecl multiplayer_game_hopper_check_required_files(bool, bool);
 const byte unk_banhammer_shit[] = {0x00};
@@ -311,11 +309,6 @@ char const* __cdecl multiplayer_game_start_error_to_string(e_session_game_start_
 
 //.text:00549650 ; enum e_session_game_start_error __cdecl multiplayer_game_is_playable(word, bool, bool, c_network_session_membership const*, word*);
 
-int __cdecl multiplayer_game_hopper_catalog_load_status() {
-	return 2;
-}
-HOOK_DECLARE(0x00545700, multiplayer_game_hopper_catalog_load_status);
-
 const s_network_session_matchmaking_hopper_category* __fastcall multiplayer_game_hopper_get_category_from_index(int a1) {
 	return &hopper_table.hopper_category[a1];
 }
@@ -364,7 +357,11 @@ e_session_game_start_error __cdecl multiplayer_game_is_playable(word hopper_iden
 
 //.text:00549870 ; bool __cdecl multiplayer_game_set_decode(c_bitstream*, s_game_set*);
 //.text:00549970 ; void __cdecl multiplayer_game_set_encode(c_bitstream*, s_game_set const*);
-//.text:00549B70 ; char const* __cdecl multiplayer_game_start_error_to_string(e_session_game_start_error);
+
+char const* __cdecl multiplayer_game_start_error_to_string(e_session_game_start_error error)
+{
+	return INVOKE(0x00549B70, multiplayer_game_start_error_to_string, error);
+}
 
 bool __cdecl create_configuration_file(const char* filename, const void* file_contents, int file_size)
 {

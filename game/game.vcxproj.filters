@@ -1365,6 +1365,15 @@
     <ClCompile Include="source\effects\vision_mode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\networking\logic\network_banhammer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\networking\logic\network_leaderboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\networking\online\online_session.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\networking\logic\storage\network_storage_manifest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -3318,6 +3327,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\interface\chud\chud_globals_definitions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\networking\logic\network_banhammer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\networking\tools\network_web_events.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\networking\logic\network_leaderboard.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="source\networking\online\online_session.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
