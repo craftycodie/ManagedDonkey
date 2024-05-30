@@ -9,6 +9,7 @@
 struct s_game_hopper_picked_game_collection;
 struct c_network_session_membership;
 struct c_game_variant;
+struct s_network_session_player;
 
 enum e_hopper_type
 {
@@ -29,7 +30,8 @@ struct c_hopper_configuration
 	c_enum<e_hopper_type, long, _hopper_type_ffa_unranked, k_hopper_type_count> hopper_type;
 	long image_index;
 	long xlast_index;
-	byte rich_presence_id[8];
+	long rich_presence_id;
+	long _unk_pad;
 	s_file_last_modification_date start_time;
 	s_file_last_modification_date end_time;
 	long hopper_regions;
@@ -213,6 +215,12 @@ extern c_hopper_configuration* __cdecl multiplayer_game_hoppers_get_current_hopp
 extern c_hopper_configuration* __cdecl multiplayer_game_hoppers_get_hopper_configuration(word hopper_identifier);
 extern bool __cdecl multiplayer_game_hoppers_pick_random_game_collection(long player_count, long valid_map_mask, s_game_hopper_picked_game_collection* game_collection_out);
 extern e_session_game_start_error __cdecl multiplayer_game_is_playable(word hopper_identifier, bool is_matchmaking, bool check_hopper, c_network_session_membership const* session_membership, word* out_player_error_mask);
+extern word __cdecl multiplayer_game_hopper_get_current_hopper_identifier();
+extern bool __cdecl multiplayer_game_hopper_set_active_hopper_and_request_game_set(word hopper_identifier);
+extern word __cdecl multiplayer_game_hopper_get_hopper_identifier(long index);
+extern bool __cdecl multiplayer_game_hopper_is_hopper_visible(word, c_network_session_membership const*);
+extern int __cdecl multiplayer_game_hopper_game_set_load_status();
+extern char __cdecl network_leaderboard_player_stats_valid(s_network_session_player* player);
 
 extern void __cdecl network_build_game_variant(char const* filename);
 extern void __cdecl network_load_and_use_game_variant_file(char const* filename);
@@ -226,3 +234,9 @@ extern void __cdecl network_verify_map_variant_file(char const* filename);
 extern void __cdecl network_load_and_use_packed_map_variant_file(char const* filename);
 extern void __cdecl network_verify_packed_map_variant_file(char const* filename);
 
+extern int network_session_build_matchmaking_composition(c_network_session* session, void* composition_out);
+extern void __cdecl initialize_fake_hopper(
+	s_hopper_configuration_table* configuration_table,
+	s_game_hopper_description_table* description_table,
+	s_game_set* takehome_rumble_slayer_set,
+	s_game_set* takehome_team_slayer_set);

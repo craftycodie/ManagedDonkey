@@ -1365,6 +1365,12 @@
     <ClCompile Include="source\effects\vision_mode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\networking\logic\storage\network_storage_manifest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\networking\logic\storage\network_storage_manifest.hpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\camera\camera.hpp">

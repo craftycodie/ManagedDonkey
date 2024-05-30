@@ -1,4 +1,5 @@
 #include "networking/session/network_managed_session.hpp"
+#include "memory/module.hpp"
 
 REFERENCE_DECLARE(0x02247448, s_online_session_manager_globals, online_session_manager_globals);
 
@@ -54,10 +55,13 @@ REFERENCE_DECLARE(0x02247448, s_online_session_manager_globals, online_session_m
 //.text:00481F80 ; void __cdecl managed_session_game_start_complete(long, bool, dword);
 //.text:00481FE0 ; s_online_managed_session* __cdecl managed_session_get(long);
 //.text:00482000 ; bool __cdecl managed_session_get_handle(long, void**);
+HOOK_DECLARE(0x00482040, managed_session_get_id);
 
 bool __cdecl managed_session_get_id(long index, s_transport_secure_identifier* session_id)
 {
-	return INVOKE(0x00482040, managed_session_get_id, index, session_id);
+	bool result;
+	HOOK_INVOKE(result =, managed_session_get_id, index, session_id);
+	return result;
 }
 
 char const* __cdecl managed_session_get_id_string(long index)

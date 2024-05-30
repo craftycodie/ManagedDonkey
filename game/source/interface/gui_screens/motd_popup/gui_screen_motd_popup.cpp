@@ -39,5 +39,6 @@ e_download_status __thiscall t_motd_popup_data_downloader::get_data(s_motd_popup
 	return _http_download_status_succeeded;
 }
 //HOOK_DECLARE_CLASS_MEMBER(0x00AE74E0, t_motd_popup_data_downloader, get_data);
-//DATA_PATCH_DECLARE2(0x00AE82C4, is_signed_in_to_live_test_jz, 2, { 0x74, 0x00 });
+const byte data_patch[]{ 0x74, 0x00 };
+DATA_PATCH_DECLARE(0x00AE82C4, is_signed_in_to_live_test_jz, data_patch);
 

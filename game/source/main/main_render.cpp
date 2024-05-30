@@ -312,7 +312,7 @@ void __cdecl game_engine_render_frame_watermarks_for_controller(e_controller_ind
 		s_date_and_time date_and_time{};
 		game_time_get_date_and_time(&date_and_time);
 
-		strings[0].print("PRE-RELEASE BUILD");
+		strings[0].print("Donkey Research Build");
 		strings[1].print("%s @ %d/%d/%d %02d:%02d:%02d",
 			display_name.get_string(),
 			date_and_time.month,
@@ -336,7 +336,7 @@ void __cdecl game_engine_render_frame_watermarks_for_controller(e_controller_ind
 
 		draw_string.set_font(1);
 		draw_string.set_color(0xB0FFFFFF);
-		draw_string.set_justification(1);
+		draw_string.set_justification(2);
 		short line_height = draw_string.get_line_height();
 
 		{

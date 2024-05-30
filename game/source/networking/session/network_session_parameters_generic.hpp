@@ -5,7 +5,7 @@
 template <typename t_type>
 struct c_generic_network_session_parameter_data
 {
-protected:
+public:
 	t_type m_data;
 	t_type m_change_request_data;
 };
