@@ -5,7 +5,7 @@
 
 REFERENCE_DECLARE(0x02247448, s_online_session_manager_globals, online_session_manager_globals);
 
-//HOOK_DECLARE_CLASS_MEMBER(0x00480420, c_managed_session_overlapped_task, complete_);
+HOOK_DECLARE_CLASS_MEMBER(0x00480420, c_managed_session_overlapped_task, complete_);
 //HOOK_DECLARE_CLASS_MEMBER(0x00480440, c_managed_session_overlapped_task, failure_);
 //HOOK_DECLARE_CLASS_MEMBER(0x00483CB0, c_managed_session_overlapped_task, success_);
 

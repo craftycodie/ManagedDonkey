@@ -6,7 +6,7 @@
 
 HOOK_DECLARE_CLASS_MEMBER(0x00493980, c_life_cycle_state_handler_matchmaking_start, determine_matchmaking_find_match_role);
 
-bool net_matchmaking_force_gather = false;
+bool net_matchmaking_force_gather = true;
 bool net_matchmaking_force_search = false;
 
 long __thiscall c_life_cycle_state_handler_matchmaking_start::determine_matchmaking_find_match_role(bool a1)

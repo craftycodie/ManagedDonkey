@@ -45,7 +45,6 @@ bool c_controller_interface::is_attached()
 bool c_controller_interface::in_use()
 {
 	//return DECLFUNC(0x00480590, bool, __thiscall, c_controller_interface*)(this);
-
 	return is_signed_in_to_machine() || m_state_flags.test(_controller_state_flag_unsigned_in_user);
 }
 

@@ -4,6 +4,7 @@
 #include "cseries/cseries.hpp"
 #include "networking/online/online_session.hpp"
 #include "networking/transport/transport_security.hpp"
+#include "xlive/xdefs.hpp"
 
 enum e_session_overlapped_task_context
 {
@@ -46,7 +47,7 @@ struct c_managed_session_overlapped_task :
 	void __thiscall process_game_start(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session);
 	void __thiscall process_remove_players(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session, qword const* a4, bool const* a5, long player_count);
 	void __thiscall process_session_host_migrate(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session, bool is_host, s_transport_session_description* host_migration_description);
-	dword __thiscall start_(void* overlapped);
+	dword __thiscall start_(PXOVERLAPPED overlapped);
 
 	void __thiscall complete_();
 	void __thiscall failure_(dword calling_result, dword overlapped_error, dword overlapped_extended_error);

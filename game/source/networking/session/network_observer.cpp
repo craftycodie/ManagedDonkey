@@ -2,6 +2,7 @@
 
 #include "cseries/cseries_events.hpp"
 #include "networking/messages/network_messages_connect.hpp"
+#include "memory/module.hpp"
 
 c_network_observer::s_channel_observer const* c_network_observer::find_observer_by_channel(c_network_channel const* observer) const
 {
@@ -117,6 +118,12 @@ void c_network_observer::observer_prioritize_upload_bandwidth(bool prioritize_up
 //.text:00447B20 ; c_network_oberserver::quality_statistics_report_badness
 //.text:00447B60 ; s_network_quality_statistics* c_network_observer::quality_statistics_get()
 //.text:00447B70 ; void c_network_observer::quality_statistics_get_ratings(long*, long*, long*)
+void c_network_observer::quality_statistics_get_ratings(long* connectivity_badness_rating, long* host_badness_rating, long* client_badness_rating) {
+    *connectivity_badness_rating = 1;
+    *host_badness_rating = 1;
+    *client_badness_rating = 1;
+}
+HOOK_DECLARE_CLASS_MEMBER(0x00447B70, c_network_observer, quality_statistics_get_ratings);
 //.text:00447CC0 ; void c_network_observer::quality_statistics_notify_established_connectivity(e_network_observer_owner, long, bool)
 //.text:00447D90 ; void c_network_observer::quality_statistics_notify_peer_left_gracefully(e_network_observer_owner, long)
 //.text:00447DE0 ; void c_network_observer::quality_statistics_report_badness(long, bool, char const*)

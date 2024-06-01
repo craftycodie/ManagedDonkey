@@ -7,19 +7,23 @@
 
 #include <windows.h>
 
+//#include <winsock2.h>
+#include "xlive/xdefs.hpp"
+
+
 #define VALID_HANDLE(HANDLE) (HANDLE && HANDLE != INVALID_HANDLE_VALUE)
 
-//HOOK_DECLARE_CLASS_MEMBER(0x00442C00, c_managed_session_overlapped_task, process_add_players);
+HOOK_DECLARE_CLASS_MEMBER(0x00442C00, c_managed_session_overlapped_task, process_add_players);
 //HOOK_DECLARE_CLASS_MEMBER(0x00442C10, c_managed_session_overlapped_task, process_add_players_immediately);
-//HOOK_DECLARE_CLASS_MEMBER(0x00442C20, c_managed_session_overlapped_task, process_create);
-//HOOK_DECLARE_CLASS_MEMBER(0x00442C30, c_managed_session_overlapped_task, process_delete);
-//HOOK_DECLARE_CLASS_MEMBER(0x00442C40, c_managed_session_overlapped_task, process_game_end);
-//HOOK_DECLARE_CLASS_MEMBER(0x00442C50, c_managed_session_overlapped_task, process_game_start);
-//HOOK_DECLARE_CLASS_MEMBER(0x00442C60, c_managed_session_overlapped_task, process_modify);
-////HOOK_DECLARE_CLASS_MEMBER(0x00442C70, c_managed_session_overlapped_task, process_modify_immediately);
-//HOOK_DECLARE_CLASS_MEMBER(0x00442C80, c_managed_session_overlapped_task, process_remove_players);
-//HOOK_DECLARE_CLASS_MEMBER(0x00442CA0, c_managed_session_overlapped_task, process_session_host_migrate);
-//HOOK_DECLARE_CLASS_MEMBER(0x00442CB0, c_managed_session_overlapped_task, start_);
+HOOK_DECLARE_CLASS_MEMBER(0x00442C20, c_managed_session_overlapped_task, process_create);
+HOOK_DECLARE_CLASS_MEMBER(0x00442C30, c_managed_session_overlapped_task, process_delete);
+HOOK_DECLARE_CLASS_MEMBER(0x00442C40, c_managed_session_overlapped_task, process_game_end);
+HOOK_DECLARE_CLASS_MEMBER(0x00442C50, c_managed_session_overlapped_task, process_game_start);
+HOOK_DECLARE_CLASS_MEMBER(0x00442C60, c_managed_session_overlapped_task, process_modify);
+//HOOK_DECLARE_CLASS_MEMBER(0x00442C70, c_managed_session_overlapped_task, process_modify_immediately);
+HOOK_DECLARE_CLASS_MEMBER(0x00442C80, c_managed_session_overlapped_task, process_remove_players);
+HOOK_DECLARE_CLASS_MEMBER(0x00442CA0, c_managed_session_overlapped_task, process_session_host_migrate);
+HOOK_DECLARE_CLASS_MEMBER(0x00442CB0, c_managed_session_overlapped_task, start_);
 
 //.text:00442C00 ; void __cdecl c_managed_session_overlapped_task::process_add_players(long, void(__cdecl*)(long, bool, dword), s_online_session*, qword const*, bool const*, bool const*, long);
 void __thiscall c_managed_session_overlapped_task::process_add_players(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session, qword const* a4, bool const* a5, bool const* a6, long player_count)
@@ -165,7 +169,7 @@ void __thiscall c_managed_session_overlapped_task::process_session_host_migrate(
 }
 
 //.text:00442CB0 ; virtual dword __cdecl c_managed_session_overlapped_task::start(void*);
-dword __thiscall c_managed_session_overlapped_task::start_(void* overlapped)
+dword __thiscall c_managed_session_overlapped_task::start_(PXOVERLAPPED pXOverlapped)
 {
 	dword result = 0;
 
@@ -178,24 +182,55 @@ dword __thiscall c_managed_session_overlapped_task::start_(void* overlapped)
 
 		ASSERT(m_session);
 
-		//DWORD dwFlags = m_session->controller_index;
-		//DWORD dwUserIndex = m_session->controller_index;
-		//DWORD dwMaxPublicSlots = m_session->public_slots_flags;
-		//DWORD dwMaxPrivateSlots = m_session->private_slots_flags;
-		//ULONGLONG qwSessionNonce = m_session->nonce;
-		//XSESSION_INFO SessionInfo = m_session->description;
-		//
+		DWORD dwFlags = m_session->controller_index;
+		DWORD dwUserIndex = m_session->controller_index;
+		DWORD dwMaxPublicSlots = m_session->public_slots_flags;
+		DWORD dwMaxPrivateSlots = m_session->private_slots_flags;
+		ULONGLONG* qwSessionNonce = &m_session->nonce;
+		PXSESSION_INFO SessionInfo = (PXSESSION_INFO)&m_session->description;
+		
+		*qwSessionNonce = 0xDEADBEEF;
+		SessionInfo->hostAddress.inaOnline.S_un.S_addr = 0x7F000001;
+		SessionInfo->hostAddress.wPortOnline = 8080;
+		memset(SessionInfo->sessionID.ab, 0x12, sizeof(SessionInfo->sessionID));
+		memset(SessionInfo->keyExchangeKey.ab, 0x34, sizeof(SessionInfo->keyExchangeKey));
+		memset(SessionInfo->hostAddress.abEnet, 0x8B, sizeof(SessionInfo->hostAddress.abEnet));
+		memset(SessionInfo->hostAddress.abOnline, 0x56, sizeof(SessionInfo->hostAddress.abOnline));
+
+		this->success(0);
+		this->complete();
+
+		//if (pXOverlapped) {
+		//	//asynchronous
+
+		//	pXOverlapped->InternalLow = ERROR_SUCCESS;
+		//	pXOverlapped->InternalHigh = 0;
+		//	pXOverlapped->dwExtendedError = ERROR_SUCCESS;
+
+		//	Check_Overlapped(pXOverlapped);
+
+		//	return ERROR_IO_PENDING;
+		//}
+
+		//synchronous
+		return ERROR_SUCCESS;
+
+
+
+
+
+
 		//if (controller_get(m_session->controller_index)->is_signed_in_to_live())
 		//{
-		//	result = XSessionCreate(dwFlags, dwUserIndex, dwMaxPublicSlots, dwMaxPrivateSlots, qwSessionNonce, SessionInfo, (PXOVERLAPPED)overlapped, handle);
+			//result = XSessionCreate(dwFlags, dwUserIndex, dwMaxPublicSlots, dwMaxPrivateSlots, qwSessionNonce, SessionInfo, (PXOVERLAPPED)overlapped, (PHANDLE)m_session->handle);
 		//}
 		//else
 		//{
 		//	result = E_FAIL;
 		//}
-		//
-		//generate_event(_event_level_message, "networking:managed_session: created XSession handle %08X",
-		//	m_session->handle);
+		
+		generate_event(_event_level_message, "networking:managed_session: created XSession handle %08X",
+			m_session->handle);
 	}
 	break;
 	case _session_overlapped_task_context_delete:
@@ -245,6 +280,11 @@ dword __thiscall c_managed_session_overlapped_task::start_(void* overlapped)
 		//	dwMaxPrivateSlots);
 		//
 		//result = XSessionModify(m_session->handle, dwFlags, dwMaxPublicSlots, dwMaxPrivateSlots, (PXOVERLAPPED)overlapped);
+
+		this->success(0);
+		this->complete();
+
+		return 0;
 	}
 	break;
 	case _session_overlapped_task_context_add_players:

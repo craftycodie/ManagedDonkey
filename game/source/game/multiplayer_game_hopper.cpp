@@ -22,7 +22,7 @@ HOOK_DECLARE(0x00548250, multiplayer_game_hopper_get_current_hopper_identifier);
 HOOK_DECLARE(0x00549610, multiplayer_game_hopper_update);
 HOOK_DECLARE(0x00549620, multiplayer_game_hoppers_get_current_hopper_configuration);
 HOOK_DECLARE(0x00549630, multiplayer_game_hoppers_get_hopper_configuration);
-//HOOK_DECLARE(0x00549640, multiplayer_game_hoppers_pick_random_game_collection);
+HOOK_DECLARE(0x00549640, multiplayer_game_hoppers_pick_random_game_collection);
 HOOK_DECLARE(0x00549650, multiplayer_game_is_playable);
 HOOK_DECLARE(0x004D2840, network_session_build_matchmaking_composition);
 HOOK_DECLARE(0x00544AC0, initialize_fake_hopper);
@@ -38,6 +38,8 @@ static s_game_hopper_description_table hopper_descriptions;
 static s_hopper_configuration_table hopper_table;
 static s_game_set game_set_1;
 static s_game_set game_set_2;
+struct c_game_variant game_variant;
+struct c_map_variant map_variant;
 
 
 void __cdecl initialize_fake_hopper(
@@ -48,6 +50,16 @@ void __cdecl initialize_fake_hopper(
 	HOOK_INVOKE(, initialize_fake_hopper, configuration_table, description_table, takehome_rumble_slayer_set, takehome_team_slayer_set);
 	// missed from initialize_fake_hopper?
 	configuration_table->hopper_configuration_count = 2;
+	configuration_table->hopper_configurations[0].hopper_name = "Test Playlist";
+	configuration_table->hopper_configurations[0].hopper_type = 1;
+	configuration_table->hopper_configurations[0].ffa.minimum_player_count = 1;
+	configuration_table->hopper_configurations[0].ffa.maximum_player_count = 1;
+	configuration_table->hopper_configurations[0].gather_give_up_seconds = 5;
+	configuration_table->hopper_configurations[0].chance_of_gathering[0] = 1;
+	configuration_table->hopper_configurations[0].veto_enabled = true;
+	configuration_table->hopper_configurations[0].rematch_group_formation = 1;
+	configuration_table->hopper_configurations[0].rematch_countdown_timer = 10;
+	configuration_table->hopper_configurations[0].stats_write = false;
 }
 
 //.text:00544AC0 ; void __cdecl initialize_fake_hopper(s_hopper_configuration_table*, s_game_hopper_description_table*, s_game_set*, s_game_set*);
@@ -93,14 +105,34 @@ char __cdecl network_leaderboard_player_stats_valid(s_network_session_player* pl
 }
 
 //.text:00548220 ; e_network_file_load_status __cdecl multiplayer_game_hopper_game_variant_load_status();
+int __cdecl multiplayer_game_hopper_game_variant_load_status() {
+	return 2;
+}
+HOOK_DECLARE(0x00548220, multiplayer_game_hopper_game_variant_load_status);
 //.text:00548230 ; s_game_hopper_custom_category const* __cdecl multiplayer_game_hopper_get_category_from_index();
 //.text:00548240 ; c_game_variant const* __cdecl multiplayer_game_hopper_get_current_game_variant();
+c_game_variant const* __cdecl multiplayer_game_hopper_get_current_game_variant() {
+
+	build_default_game_variant(&game_variant, e_game_engine_type::_game_engine_type_oddball);
+	game_variant.get_oddball_variant_writeable()->set_name("Test Oddball");
+	game_variant.get_oddball_variant_writeable()->set_score_to_win(25);
+	game_variant.get_oddball_variant_writeable()->get_miscellaneous_options_writeable()->set_round_limit(1);
+
+	return &game_variant;
+}
+HOOK_DECLARE(0x00548240, multiplayer_game_hopper_get_current_game_variant);
 //.text:00548250 ; word __cdecl multiplayer_game_hopper_get_current_hopper_identifier();
 word __cdecl multiplayer_game_hopper_get_current_hopper_identifier() {
 	return current_hopper_identifier;
 }
 
 //.text:00548260 ; c_map_variant const* __cdecl multiplayer_game_hopper_get_current_map_variant();
+c_map_variant const* __cdecl multiplayer_game_hopper_get_current_map_variant() {
+	map_variant.create_default(320);
+
+	return &map_variant;
+}
+HOOK_DECLARE(0x00548260, multiplayer_game_hopper_get_current_map_variant);
 //.text:00548270 ; utf8 const* __cdecl multiplayer_game_hopper_get_description(word);
 //.text:00548280 ; word __cdecl multiplayer_game_hopper_get_hopper_identifier(long);
 word __cdecl multiplayer_game_hopper_get_hopper_identifier(long index) {
@@ -120,6 +152,11 @@ bool __cdecl multiplayer_game_hopper_is_hopper_visible(word, c_network_session_m
 
 //.text:005483D0 ; sub_5483D0
 //.text:005483E0 ; e_network_file_load_status __cdecl multiplayer_game_hopper_map_variant_load_status();
+int __cdecl multiplayer_game_hopper_map_variant_load_status() {
+	return 2;
+}
+HOOK_DECLARE(0x005483E0, multiplayer_game_hopper_map_variant_load_status);
+
 //.text:005483F0 ; long __cdecl multiplayer_game_hopper_pack_game_set(void*, long, s_game_set const*);
 
 //.text:00548610 ; long __cdecl multiplayer_game_hopper_pack_game_variant(void*, long, c_game_variant const*);
@@ -302,7 +339,28 @@ c_hopper_configuration* __cdecl multiplayer_game_hoppers_get_hopper_configuratio
 //.text:00549640 ; bool __cdecl multiplayer_game_hoppers_pick_random_game_collection(long, long, s_game_hopper_picked_game_collection*);
 bool __cdecl multiplayer_game_hoppers_pick_random_game_collection(long player_count, long valid_map_mask, s_game_hopper_picked_game_collection* game_collection_out)
 {
-	return false;
+	//return false;
+
+	//game_collection_out->picked_games = game_set_1.entries
+
+	game_collection_out->picked_games[0].map_id = 320;
+	game_collection_out->picked_games[0].map_variant_name = "guardian_default";
+	game_collection_out->picked_games[0].game_variant_name = "test_slayer";
+
+	game_collection_out->picked_games[1].map_id = 320;
+	game_collection_out->picked_games[1].map_variant_name = "guardian_default";
+	game_collection_out->picked_games[1].game_variant_name = "test_slayer";
+
+	game_collection_out->picked_games[2].map_id = 320;
+	game_collection_out->picked_games[2].map_variant_name = "guardian_default";
+	game_collection_out->picked_games[2].game_variant_name = "test_slayer";
+
+	game_collection_out->picked_games[3].map_id = 320;
+	game_collection_out->picked_games[3].map_variant_name = "guardian_default";
+	game_collection_out->picked_games[3].game_variant_name = "test_slayer";
+
+	
+	return true;
 }
 
 char const* __cdecl multiplayer_game_start_error_to_string(e_session_game_start_error);
@@ -338,8 +396,11 @@ DATA_PATCH_DECLARE(0x00464AA0, downloader_manifest_skip_1, fuck2);
 const byte composition_return_bytes[] = { 0x12 };
 DATA_PATCH_DECLARE(0x4D2921, composition_return, composition_return_bytes);
 
-//const byte players_established_patch_bytes[] = {0xB0, 0x01};
-//DATA_PATCH_DECLARE(0x0045A406, players_established_return, players_established_patch_bytes);
+const byte players_established_patch_bytes[] = {0xB0, 0x01};
+DATA_PATCH_DECLARE(0x0045A406, players_established_return, players_established_patch_bytes);
+
+const byte session_has_minimum_player_count_to_start_game_in_hopper_bytes[] = { 0xB0, 0x01 };
+DATA_PATCH_DECLARE(0x0048DF19, session_has_minimum_player_count_to_start_game_in_hopper, session_has_minimum_player_count_to_start_game_in_hopper_bytes);
 
 e_session_game_start_error __cdecl multiplayer_game_is_playable(word hopper_identifier, bool is_matchmaking, bool check_hopper, c_network_session_membership const* session_membership, word* out_player_error_mask)
 {
