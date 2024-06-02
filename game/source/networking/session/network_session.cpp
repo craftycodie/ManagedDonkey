@@ -9,6 +9,7 @@
 #include "networking/messages/network_messages_session_membership.hpp"
 #include "networking/session/network_managed_session.hpp"
 #include "networking/session/network_observer.hpp"
+#include <interface/user_interface_controller.hpp>
 
 void __cdecl network_session_calculate_peer_connectivity(c_network_session* a1, s_network_session_peer_connectivity* a2) {
 	// wait, that's illegal
@@ -562,12 +563,14 @@ bool c_network_session::peer_request_player_desired_properties_update(long playe
 
 	ASSERT(controller_index >= 0 && controller_index < k_number_of_controllers);
 	ASSERT(player_data_from_client);
+	auto controller = controller_get(controller_index);
 
 	if (!established())
 		return false;
 
 	s_player_configuration_for_player_properties player_data = { .client = *player_data_from_client };
 	update_player_data(&player_data);
+	player_data.host_partial.bungienet_user = g_user_interface_controller_globals.controller[controller_index].bungienet_user;
 
 	if (is_host())
 	{

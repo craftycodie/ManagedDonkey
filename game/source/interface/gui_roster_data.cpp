@@ -37,14 +37,14 @@ bool __thiscall c_gui_roster_data::_get_integer_value(long player_row_index, lon
 	break;
 	case STRING_ID(gui, player_row_type):
 	{
-		// simulate added controllers
-		if (player_row_index >= 1 && player_row_index < 4)
-		{
-			*integer_value = c_gui_roster_data::_player_row_type_player;
-			//*integer_value = c_gui_roster_data::_player_row_type_player_found;
-			//*integer_value = c_gui_roster_data::_player_row_type_looking_for_player;
-			//*integer_value = c_gui_roster_data::_player_row_type_press_a_to_join;
-		}
+		//// simulate added controllers
+		//if (player_row_index >= 1 && player_row_index < 4)
+		//{
+		//	//*integer_value = c_gui_roster_data::_player_row_type_player;
+		//	*integer_value = c_gui_roster_data::_player_row_type_player_found;
+		//	//*integer_value = c_gui_roster_data::_player_row_type_looking_for_player;
+		//	//*integer_value = c_gui_roster_data::_player_row_type_press_a_to_join;
+		//}
 
 		if (!result)
 			return true;
@@ -70,11 +70,11 @@ bool __thiscall c_gui_roster_data::_get_integer_value(long player_row_index, lon
 	break;
 	case STRING_ID(gui, experience):
 	{
-		*integer_value = (player_row_index % 4) + 1;
+		//*integer_value = (player_row_index % 4) + 1;
 
 		// #TODO: pull this from an api?
 		if (player_data && player_data->host.weapon.loadouts[0].bungienet_user.test(_bungienet_user_bungie))
-			*integer_value = 42;
+			*integer_value = 21;
 
 		if (!result)
 			return true;
@@ -82,11 +82,11 @@ bool __thiscall c_gui_roster_data::_get_integer_value(long player_row_index, lon
 	break;
 	case STRING_ID(gui, skill_level):
 	{
-		*integer_value = (player_row_index % 4) + 1;
+		//*integer_value = (player_row_index % 4) + 1;
 
 		// #TODO: pull this from an api?
-		if (player_data && player_data->host.weapon.loadouts[0].bungienet_user.test(_bungienet_user_bungie))
-			*integer_value = 50;
+		//if (player_data && player_data->host.weapon.loadouts[0].bungienet_user.test(_bungienet_user_bungie))
+		//	*integer_value = 50;
 
 		if (!result)
 			return true;
@@ -95,7 +95,7 @@ bool __thiscall c_gui_roster_data::_get_integer_value(long player_row_index, lon
 	case STRING_ID(gui, bungienet_user):
 	{
 		// Look At Me. I'm The Bungie Now.
-		*integer_value |= FLAG(_bungienet_user_default);
+		//*integer_value |= FLAG(_bungienet_user_seventh_column);
 
 		if (player_data)
 			*integer_value = player_data->host.weapon.loadouts[0].bungienet_user;
@@ -130,21 +130,21 @@ bool __thiscall c_gui_roster_data::_get_text_value(long player_row_index, long n
 	break;
 	case STRING_ID(global, press_a_to_join):
 	{
-		text_value->set(L"PRESS A TO JOIN");
+		//text_value->print(L"PRESS A TO JOIN");
 		if (!result)
 			return true;
 	}
 	break;
 	case STRING_ID(gui, looking_for_player):
 	{
-		text_value->set(L"LOOKING FOR PLAYER");
+		//text_value->print(L"Looking for player...");
 		if (!result)
 			return true;
 	}
 	break;
 	case STRING_ID(gui, player_found):
 	{
-		text_value->set(L"PLAYER FOUND");
+		//text_value->print(L"Player Found");
 		if (!result)
 			return true;
 	}

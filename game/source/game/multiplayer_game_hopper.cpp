@@ -54,8 +54,8 @@ void __cdecl initialize_fake_hopper(
 	configuration_table->hopper_configurations[0].hopper_name = "Test Playlist";
 	configuration_table->hopper_configurations[0].hopper_type = 1;
 	configuration_table->hopper_configurations[0].ffa.minimum_player_count = 1;
-	configuration_table->hopper_configurations[0].ffa.maximum_player_count = 1;
-	configuration_table->hopper_configurations[0].gather_give_up_seconds = 5;
+	configuration_table->hopper_configurations[0].ffa.maximum_player_count = 6;
+	configuration_table->hopper_configurations[0].gather_give_up_seconds = 15;
 	configuration_table->hopper_configurations[0].chance_of_gathering[0] = 1;
 	configuration_table->hopper_configurations[0].veto_enabled = true;
 	configuration_table->hopper_configurations[0].rematch_group_formation = 1;
