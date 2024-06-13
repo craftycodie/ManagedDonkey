@@ -319,14 +319,23 @@ struct c_cache_file_tag_resource_runtime_manager :
 	public c_tag_resource_prediction_atom_generator,
 	public c_cache_file_resource_stoler
 {
+public:
 	void idle();
-	void initialize_for_new_map(e_game_mode game_mode, long cache_file_resource_gestalt_index, long resource_vtable_list_count, s_cache_file_tag_resource_vtable const** resource_vtable_list, c_cache_file_runtime_decompressor_registry* runtime_decompressor_registry);
+	void initialize(c_allocation_base* allocation);
+	void __thiscall sub_561C00(e_game_mode game_mode);
+	void initialize_for_new_map(
+		e_game_mode game_mode,
+		long cache_file_resource_gestalt_index,
+		long resource_vtable_list_count,
+		s_cache_file_tag_resource_vtable const** resource_vtable_list,
+		c_cache_file_runtime_decompressor_registry* runtime_decompressor_registry);
 
 	void* get_cached_resource_data(long resource_handle)
 	{
 		return m_in_level_memory_manager.m_tag_resource_cache.get_resource_data(resource_handle);
 	}
 
+//protected:
 	s_cache_file_resource_gestalt* m_resource_gestalt;
 	s_cache_file_resource_runtime_active_zone_state m_active_zone_state;
 	s_cache_file_resource_runtime_prefetching_state m_prefetching_state;
@@ -386,7 +395,13 @@ static_assert(0x6ACA8 == offsetof(c_cache_file_tag_resource_runtime_manager, m_r
 static_assert(0x6ACA9 == offsetof(c_cache_file_tag_resource_runtime_manager, __unknown6ACA9));
 static_assert(0x6ACAA == offsetof(c_cache_file_tag_resource_runtime_manager, __data6ACAA));
 
-extern c_typed_allocation_data_no_destruct<c_cache_file_tag_resource_runtime_manager, 1>& g_resource_runtime_manager;
+struct c_cache_file_tag_resource_runtime_manager_allocation :
+	public c_typed_allocation_data_no_destruct<c_cache_file_tag_resource_runtime_manager, 1>
+{
+public:
+	void construct();
+};
+extern c_cache_file_tag_resource_runtime_manager_allocation& g_resource_runtime_manager;
 
 enum e_game_mode;
 struct s_scenario_game_state;

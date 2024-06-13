@@ -54,6 +54,7 @@
 #include "saved_games/scenario_map_variant.hpp"
 #include "simulation/game_interface/simulation_game_action.hpp"
 #include "tag_files/tag_groups.hpp"
+#include "xbox/xnet.hpp"
 
 REFERENCE_DECLARE(0x0224A490, c_network_session_parameter_type_collection*, g_network_parameter_types);
 REFERENCE_DECLARE(0x0224A494, c_network_link*, g_network_link);
@@ -171,7 +172,6 @@ void __cdecl network_dispose()
 
 	if (network_globals.initialized)
 	{
-		//service_client_dispose();
 		network_storage_cache_dispose();
 		network_storage_manifest_dispose();
 		network_storage_dispose();
@@ -275,6 +275,7 @@ void __cdecl network_initialize()
 				g_network_observer->initialize_observer(g_network_link, g_network_message_types, g_network_message_gateway, g_network_message_handler, &g_network_configuration.observer_configuration);
 	
 			g_network_message_handler->register_observer(g_network_observer);
+
 			g_network_session_parameter_types->clear_session_parameter_types();
 			network_session_parameter_types_register(g_network_session_parameter_types);
 			g_network_session_parameter_types->check_session_parameter_types();
@@ -315,7 +316,6 @@ void __cdecl network_initialize()
 				online_files_initialize();
 				network_http_request_queue_initialize();
 				network_storage_files_initialize();
-				//service_client_initialize();
 	
 				//status_lines_initialize(g_network_memory_status_line, &g_network_status_memory, 1);
 				//status_lines_initialize(g_network_link_status_line, &g_network_status_link, 1);
@@ -333,6 +333,8 @@ void __cdecl network_initialize()
 			{
 				network_set_online_environment(false);
 				network_globals.initialized = true;
+
+				get_external_ip();
 			}
 			else
 			{
@@ -422,29 +424,29 @@ void __cdecl network_set_online_environment(bool online_environment)
 
 void __cdecl network_shutdown_transport(void* userdata)
 {
-	INVOKE(0x0049E6E0, network_shutdown_transport, userdata);
+	//INVOKE(0x0049E6E0, network_shutdown_transport, userdata);
 
-	//if (network_initialized())
-	//{
-	//	generate_event(_event_level_error, "networking:global: network terminating due to transport shutdown");
-	//
-	//	if (g_network_link)
-	//		g_network_link->destroy_endpoints();
-	//
-	//	if (g_network_observer)
-	//		g_network_observer->set_online_network_environment(false);
-	//}
+	if (network_initialized())
+	{
+		generate_event(_event_level_error, "networking:global: network terminating due to transport shutdown");
+	
+		if (g_network_link)
+			g_network_link->destroy_endpoints();
+	
+		if (g_network_observer)
+			g_network_observer->set_online_network_environment(false);
+	}
 }
 
 void __cdecl network_startup_transport(void* userdata)
 {
-	INVOKE(0x0049E770, network_startup_transport, userdata);
+	//INVOKE(0x0049E770, network_startup_transport, userdata);
 
-	//if (network_initialized())
-	//{
-	//	if (g_network_link)
-	//		g_network_link->destroy_endpoints();
-	//}
+	if (network_initialized())
+	{
+		if (g_network_link)
+			g_network_link->create_endpoints();
+	}
 }
 
 void __cdecl network_update()
@@ -486,7 +488,6 @@ void __cdecl network_update()
 			network_http_request_queue_update();
 			network_storage_files_update();
 			c_online_lsp_manager::get()->update();
-			//service_client_get()->update();
 	
 			NETWORK_EXIT_AND_UNLOCK_TIME;
 		}

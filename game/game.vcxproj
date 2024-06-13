@@ -192,6 +192,8 @@ POPD
     <ClCompile Include="source\ai\props.cpp" />
     <ClCompile Include="source\ai\sector.cpp" />
     <ClCompile Include="source\ai\squads.cpp" />
+    <ClCompile Include="source\cache\cache_file_codec_work.cpp" />
+    <ClCompile Include="source\cseries\cseries_system_memory.cpp" />
     <ClCompile Include="source\effects\decals.cpp" />
     <ClCompile Include="source\effects\effects.cpp" />
     <ClCompile Include="source\effects\vision_mode.cpp" />
@@ -210,6 +212,7 @@ POPD
     <ClCompile Include="source\game\materials.cpp" />
     <ClCompile Include="source\interface\chud\chud_globals_definitions.cpp" />
     <ClCompile Include="source\interface\chud\cortana_effect.cpp" />
+    <ClCompile Include="source\interface\c_player_profile.cpp" />
     <ClCompile Include="source\interface\gui_screens\boot_betrayer\gui_screen_boot_betrayer.cpp" />
     <ClCompile Include="source\interface\gui_screens\player_select\gui_player_select_screen_widget.cpp" />
     <ClCompile Include="source\interface\gui_screens\start_menu\panes\settings_appearance_model\start_menu_settings_appearance_model.cpp" />
@@ -669,6 +672,7 @@ POPD
     <ClInclude Include="source\cseries\async_buffer.hpp" />
     <ClInclude Include="source\cseries\async_helpers.hpp" />
     <ClInclude Include="source\cseries\cseries_memory.hpp" />
+    <ClInclude Include="source\cseries\cseries_system_memory.hpp" />
     <ClInclude Include="source\cseries\progress.hpp" />
     <ClInclude Include="source\cseries\runtime_state.hpp" />
     <ClInclude Include="source\cseries\upload_debug.hpp" />

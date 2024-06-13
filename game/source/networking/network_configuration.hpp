@@ -381,6 +381,15 @@ struct s_observer_configuration
 };
 static_assert(sizeof(s_observer_configuration) == 0x418);
 
+struct s_channel_configuration
+{
+	long __unknown0; // c_network_channel::check_to_send_connect_packet
+	long __unknown4; // c_network_channel::check_to_send_connect_packet
+	long __unknown8; // c_network_channel::check_to_send_connect_packet
+	long __unknownC; // c_network_channel::check_establishment_timeout
+};
+static_assert(sizeof(s_channel_configuration) == 0x10);
+
 struct s_lsp_service_configuration
 {
 	long lsp_port;
@@ -627,12 +636,12 @@ struct s_network_configuration
 	dword __unknown2B4;
 	dword simulation_abort_as_host_timeout;
 	dword simulation_abort_as_peer_timeout;
-	dword __unknown2C0;
+	long logic_unsuitable_session_count;
 	dword __unknown2C4;
 	dword __unknown2C8;
 	dword __unknown2CC;
 	dword __unknown2D0;
-	dword __unknown2D4;
+	long logic_qos_attempt_count;
 	dword __unknown2D8;
 	dword __unknown2DC;
 	dword __unknown2E0;
@@ -738,12 +747,8 @@ struct s_network_configuration
 	dword __unknownEC4;
 
 	s_observer_configuration observer_configuration;
+	s_channel_configuration channel_configuration;
 
-	// start of `s_channel_configuration`
-	dword __unknown12E0;
-	dword __unknown12E4;
-	dword __unknown12E8;
-	dword __unknown12EC;
 	dword __unknown12F0;
 	dword __unknown12F4;
 	dword __unknown12F8;

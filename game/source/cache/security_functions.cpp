@@ -1,9 +1,13 @@
 #include "cache/security_functions.hpp"
 
+#include "cseries/cseries_events.hpp"
 #include "memory/module.hpp"
 
 REFERENCE_DECLARE_ARRAY(0x01650460, s_secure_memory_region, k_secure_memory_regions, k_secure_memory_region_count);
+REFERENCE_DECLARE(0x022B7FA4, long, g_secure_memory_size);
+REFERENCE_DECLARE(0x022B7FA8, void*, g_secure_memory);
 
+HOOK_DECLARE(0x00508DB0, security_get_working_memory);
 HOOK_DECLARE(0x00508F80, security_rsa_compute_and_verify_signature);
 
 bool const override_scenario_load_security_rsa_compute_and_verify_signature = true;
@@ -27,12 +31,41 @@ bool __cdecl security_calculate_hash(void const* buffer, dword buffer_size, bool
 
 void __cdecl security_dispose()
 {
-	INVOKE(0x00508D80, security_dispose);
+	//INVOKE(0x00508D80, security_dispose);
+
+	if (g_secure_memory)
+	{
+		system_free(g_secure_memory);
+		g_secure_memory = NULL;
+	}
+	g_secure_memory_size = 0;
 }
 
 void __cdecl security_get_working_memory(e_secure_memory_region region, void** out_working_memory, long* out_working_memory_size)
 {
-	INVOKE(0x00508DB0, security_get_working_memory, region, out_working_memory, out_working_memory_size);
+	//INVOKE(0x00508DB0, security_get_working_memory, region, out_working_memory, out_working_memory_size);
+
+	ASSERT(VALID_INDEX(region, k_secure_memory_region_count));
+
+	ASSERT(out_working_memory);
+	ASSERT(out_working_memory_size);
+
+	ASSERT(k_secure_memory_regions[region].size > 0);
+	ASSERT(k_secure_memory_regions[region].offset >= 0 && k_secure_memory_regions[region].offset + k_secure_memory_regions[region].size <= k_secure_memory_size);
+
+	ASSERT(g_secure_memory);
+
+	if (g_secure_memory_size < k_secure_memory_size)
+	{
+		generate_event(_event_level_critical, "security: failed to get working memory");
+		*out_working_memory = NULL;
+		*out_working_memory_size = 0;
+	}
+	else
+	{
+		*out_working_memory = offset_pointer(g_secure_memory, k_secure_memory_regions[region].offset);
+		*out_working_memory_size = k_secure_memory_regions[region].size;
+	}
 }
 
 bool __cdecl security_hash_manifest_find_hash(s_network_http_request_hash const* hash, void const* manifest, dword manifest_size)
@@ -57,7 +90,10 @@ void __cdecl security_incremental_hash_update(void* working_memory, long working
 
 void __cdecl security_initialize()
 {
-	INVOKE(0x00508EC0, security_initialize);
+	//INVOKE(0x00508EC0, security_initialize);
+
+	g_secure_memory = system_malloc(k_secure_memory_size);
+	g_secure_memory_size = k_secure_memory_size;
 }
 
 char* __cdecl security_print_hash(s_network_http_request_hash const* hash, char* buffer, long buffer_size)

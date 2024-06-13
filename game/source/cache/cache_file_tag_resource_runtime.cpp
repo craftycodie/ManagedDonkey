@@ -1,6 +1,9 @@
 #include "cache/cache_file_tag_resource_runtime.hpp"
 
 #include "cache/cache_files.hpp"
+#include "cache/cache_files_windows.hpp"
+#include "cseries/runtime_state.hpp"
+#include "main/main_game.hpp"
 #include "memory/module.hpp"
 
 #include <DDS.h>
@@ -8,12 +11,17 @@
 REFERENCE_DECLARE(0x01670A18, long const, g_cache_file_tag_resource_vtable_count);
 REFERENCE_DECLARE_ARRAY(0x018EB7A8, s_cache_file_tag_resource_vtable const*, g_cache_file_tag_resource_vtable_list, 2);
 
-using resource_runtime_manager_typed_allocation_data_no_destruct_t = c_typed_allocation_data_no_destruct<c_cache_file_tag_resource_runtime_manager, 1>;
-REFERENCE_DECLARE(0x023916C0, resource_runtime_manager_typed_allocation_data_no_destruct_t, g_resource_runtime_manager);
+REFERENCE_DECLARE(0x023916C0, c_cache_file_tag_resource_runtime_manager_allocation, g_resource_runtime_manager);
+
+HOOK_DECLARE_CLASS_MEMBER(0x00561C00, c_cache_file_tag_resource_runtime_manager, sub_561C00);
+HOOK_DECLARE(0x00563E10, tag_resource_get);
 
 c_static_sized_dynamic_array<s_resource_file_header const*, 1024> g_resource_file_headers;
 
-HOOK_DECLARE(0x00563E10, tag_resource_get);
+void __thiscall c_cache_file_tag_resource_runtime_manager_allocation::construct()
+{
+	DECLFUNC(0x0055FF10, void, __thiscall, c_cache_file_tag_resource_runtime_manager_allocation*)(this);
+}
 
 #define ISEXPERIMENTAL
 
@@ -192,10 +200,10 @@ void __cdecl cache_file_tag_resources_dispose_from_old_map()
 
 void __cdecl cache_file_tag_resources_initialize()
 {
-	INVOKE(0x0055F700, cache_file_tag_resources_initialize);
+	//INVOKE(0x0055F700, cache_file_tag_resources_initialize);
 
-	//g_resource_runtime_manager.construct();
-	//g_resource_runtime_manager.initialize(g_runtime_state_allocation);
+	g_resource_runtime_manager.construct();
+	g_resource_runtime_manager.get()->initialize(g_runtime_state_allocation);
 }
 
 void __cdecl cache_file_tag_resources_initialize_for_new_map(e_game_mode game_mode)
@@ -313,7 +321,77 @@ void c_cache_file_tag_resource_runtime_manager::idle()
 	DECLFUNC(0x005619D0, void, __thiscall, c_cache_file_tag_resource_runtime_manager*)(this);
 }
 
-void c_cache_file_tag_resource_runtime_manager::initialize_for_new_map(e_game_mode game_mode, long cache_file_resource_gestalt_index, long resource_vtable_list_count, s_cache_file_tag_resource_vtable const** resource_vtable_list, c_cache_file_runtime_decompressor_registry* runtime_decompressor_registry)
+void c_cache_file_tag_resource_runtime_manager::initialize(c_allocation_base* allocation)
+{
+	DECLFUNC(0x00561B40, void, __thiscall, c_cache_file_tag_resource_runtime_manager*, c_allocation_base*)(this, allocation);
+
+	//m_running_off_dvd = cache_files_running_off_dvd();
+	//m_in_level_memory_manager.m_resource_header_location_table.m_uber_location_table.__unknown4 = 0;
+	//m_game_mode = _game_mode_none;
+	//m_resource_gestalt = NULL;
+	//m_in_level_memory_manager.m_tag_resource_cache.initialize();
+	//physical_memory_create_resizeable_contiguous_region(this);
+	//m_optional_cache_backend.initialize(_map_memory_configuration_none, NULL);
+	//optional_cache_set_in_game_backend(&m_optional_cache_backend);
+	//m_in_level_memory_manager.m_resource_header_location_table.m_header_file_locations
+	//	= data_new("shared file handles", 8, sizeof(c_cache_file_resource_header_location_table::s_header_file_location), 0, g_runtime_state_allocation);
+	//m_prefetch_map_states2A788[1].campaign_id = NONE;
+	//m_prefetch_map_states2A788[1].scenario_path.clear();
+	//m_prefetch_map_states2A788[1].__unknown104 = 0;
+	//m_prefetch_map_states2A788[0].campaign_id = NONE;
+	//m_prefetch_map_states2A788[0].scenario_path.clear();
+	//m_prefetch_map_states2A788[0].__unknown104 = 0;
+}
+
+// does this actually take in `game_mode` or is IDA being IDA again
+void __thiscall c_cache_file_tag_resource_runtime_manager::sub_561C00(e_game_mode game_mode)
+{
+	c_cache_file_resource_header_location_table& resource_header_location_table = m_in_level_memory_manager.m_resource_header_location_table;
+
+	data_make_valid(*resource_header_location_table.m_header_file_locations);
+	resource_header_location_table.m_header_file_location_handle_index = 6;
+	for (long& header_file_location_handle : resource_header_location_table.m_header_file_location_handles)
+		header_file_location_handle = NONE;
+
+	long header_file_location_handle = datum_new_at_absolute_index(*resource_header_location_table.m_header_file_locations, _map_file_index_shared_ui);
+	c_cache_file_resource_header_location_table::s_header_file_location& header_file_location = resource_header_location_table.m_header_file_locations[header_file_location_handle];
+
+	if (cache_file_get_master_indirect_file_handle(&header_file_location.indirect_file))
+		cache_file_get_master_resource_section_offset(&header_file_location.resource_section_offset);
+
+	cache_file_get_master_async_file_handle(&header_file_location.async_file_handle);
+	cache_file_get_master_overlapped_file_handle(&header_file_location.overlapped_handle);
+
+	header_file_location.shared_resource_usage = cache_file_try_to_get_master_shared_resource_usage();
+	resource_header_location_table.m_header_file_location_handles[_map_file_index_shared_ui] = header_file_location_handle;
+
+	if (m_resource_gestalt->resources_available)
+	{
+		for (e_map_file_index map_file_index = _map_file_index_shared_resources; map_file_index < k_cached_map_file_shared_count; map_file_index++)
+		{
+			long next_header_file_location_handle = datum_new_at_absolute_index(*resource_header_location_table.m_header_file_locations, map_file_index);
+			c_cache_file_resource_header_location_table::s_header_file_location& next_header_file_location = resource_header_location_table.m_header_file_locations[next_header_file_location_handle];
+
+			if (cached_map_file_is_shared(map_file_index - 1))
+			{
+				if (cache_file_get_indirect_file_handle_from_index(map_file_index, &next_header_file_location.indirect_file))
+					next_header_file_location.resource_section_offset = 0;
+
+				cache_file_get_async_file_handle_from_index(map_file_index, &next_header_file_location.async_file_handle);
+				cache_file_get_overlapped_file_handle_from_index(map_file_index, &next_header_file_location.overlapped_handle);
+			}
+
+			resource_header_location_table.m_header_file_location_handles[map_file_index] = next_header_file_location_handle;
+		}
+	}
+}
+
+void c_cache_file_tag_resource_runtime_manager::initialize_for_new_map(
+	e_game_mode game_mode,
+	long cache_file_resource_gestalt_index,
+	long resource_vtable_list_count,
+	s_cache_file_tag_resource_vtable const** resource_vtable_list,
+	c_cache_file_runtime_decompressor_registry* runtime_decompressor_registry)
 {
 	DECLFUNC(0x00561DF0, void, __thiscall, c_cache_file_tag_resource_runtime_manager*, e_game_mode, long, long, s_cache_file_tag_resource_vtable const**, c_cache_file_runtime_decompressor_registry*)(
 		this,

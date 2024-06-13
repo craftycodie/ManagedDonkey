@@ -116,16 +116,28 @@ bool c_network_session::force_disconnect_peer(s_transport_secure_address const* 
 	return DECLFUNC(0x0045BE80, bool, __thiscall, c_network_session*, s_transport_secure_address const*)(this, peer_secure_address);
 }
 
-c_network_session_membership const* c_network_session::get_session_membership() const
+long c_network_session::get_peer_observer_channel(long peer_index) const
 {
-	//return DECLFUNC(0x0045C250, c_network_session_membership const*, __thiscall, c_network_session const*)(this);
+	//return DECLFUNC(0x0045C100, long, __thiscall, c_network_session const*, long)(this, peer_index);
 
 	ASSERT(established());
-	ASSERT(m_session_membership.has_membership());
-	ASSERT(m_session_membership.is_peer_valid(m_session_membership.local_peer_index()));
-	ASSERT(m_session_membership.is_peer_valid(m_session_membership.host_peer_index()));
 
-	return &m_session_membership;
+	if (peer_index != NONE && m_session_membership.is_peer_valid(peer_index))
+		return m_session_membership.get_observer_channel_index(peer_index);
+
+	return NONE;
+}
+
+c_network_session_membership const* c_network_session::get_session_membership() const
+{
+	return DECLFUNC(0x0045C250, c_network_session_membership const*, __thiscall, c_network_session const*)(this);
+
+	//ASSERT(established());
+	//ASSERT(m_session_membership.has_membership());
+	//ASSERT(m_session_membership.is_peer_valid(m_session_membership.local_peer_index()));
+	//ASSERT(m_session_membership.is_peer_valid(m_session_membership.host_peer_index()));
+	//
+	//return &m_session_membership;
 }
 
 c_network_session_membership* c_network_session::get_session_membership_for_update()
@@ -251,7 +263,7 @@ char const* c_network_session::get_mode_string() const
 		"matchmaking-choosing-game"
 	};
 
-	long current_mode = m_session_parameters.m_parameters_internal.session_mode.get();
+	long current_mode = m_session_parameters.session_mode.get();
 	ASSERT(current_mode >= 0 && current_mode < k_network_session_mode_count);
 
 	return mode_names[current_mode];
@@ -521,7 +533,7 @@ bool c_network_session::leader_request_delegate_leadership(s_transport_secure_ad
 
 e_network_session_mode c_network_session::session_mode() const
 {
-	return m_session_parameters.m_parameters_internal.session_mode.get();
+	return m_session_parameters.session_mode.get();
 }
 
 s_network_session_player* c_network_session::get_player(long player_index)
@@ -625,7 +637,14 @@ bool c_network_session::peer_request_player_desired_properties_update(long playe
 //.text:0045E110 ; bool c_network_session::player_is_member(s_player_identifier const*) const
 //.text:0045E130 ; 
 //.text:0045E140 ; void c_network_session::process_pending_joins()
-//.text:0045E910 ; 
+
+e_network_session_class c_network_session::session_class() const
+{
+	//return DECLFUNC(0x0045E910, e_network_session_class, __thiscall, c_network_session const*)(this);
+
+	return m_session_class;
+}
+
 //.text:0045E920 ; bool c_network_session::ready_for_remote_peers_to_join() const
 //.text:0045EA40 ; void c_network_session::reset_connection_state()
 //.text:0045EA70 ; void c_network_session::reset_local_host_state(bool)

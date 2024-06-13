@@ -77,6 +77,7 @@ struct c_network_session :
 	void destroy_session();
 	void force_disconnect();
 	bool force_disconnect_peer(s_transport_secure_address const* peer_secure_address);
+	long get_peer_observer_channel(long peer_index) const;
 	c_network_session_membership const* get_session_membership() const;
 	c_network_session_membership* get_session_membership_for_update();
 	c_network_session_membership const* get_session_membership_unsafe() const;
@@ -110,6 +111,7 @@ struct c_network_session :
 	e_network_session_mode session_mode() const;
 	s_network_session_player* get_player(long player_index);
 	bool peer_request_player_desired_properties_update(long player_update_number, e_controller_index controller_index, s_player_configuration_from_client const* player_data_from_client, dword player_voice);
+	e_network_session_class session_class() const;
 	bool waiting_for_host_connection(transport_address const* address) const;
 	bool handle_boot_machine(c_network_channel* channel, s_network_message_boot_machine const* message);
 	bool handle_delegate_leadership(c_network_channel* channel, s_network_message_delegate_leadership const* message);

@@ -71,7 +71,7 @@ static_assert(sizeof(s_create_file_task) == 0x218);
 
 struct s_read_position_task
 {
-	s_file_handle file;
+	s_file_handle file_handle;
 	void* buffer;
 	long buffer_size;
 	long file_offset;
@@ -89,7 +89,7 @@ enum e_write_position_flags
 
 struct s_write_position_task
 {
-	s_file_handle file;
+	s_file_handle file_handle;
 	void* buffer;
 	long size;
 	dword offset;
@@ -102,7 +102,7 @@ static_assert(sizeof(s_write_position_task) == 0x20);
 
 struct s_write_position_task2
 {
-	s_file_handle file;
+	s_file_handle file_handle;
 	long buffer_length;
 	void* buffer;
 	bool* success;
@@ -126,7 +126,7 @@ static_assert(sizeof(s_copy_position_task) == 0x28);
 
 struct s_set_file_size_task
 {
-	s_file_handle file;
+	s_file_handle file_handle;
 	long file_size;
 	c_synchronized_long* success;
 };
@@ -159,7 +159,7 @@ struct s_read_entire_file_task
 	dword buffer_size;
 	dword volatile* size;
 	c_synchronized_long* success;
-	s_file_handle file;
+	s_file_handle file_handle;
 	dword file_size;
 };
 static_assert(sizeof(s_read_entire_file_task) == 0x218);
@@ -171,26 +171,26 @@ struct s_write_buffer_to_file_task
 	dword size;
 	long __unknown208;
 	c_synchronized_long* success;
-	s_file_handle file;
+	s_file_handle file_handle;
 };
 static_assert(sizeof(s_write_buffer_to_file_task) == 0x214);
 
 struct s_close_file_task
 {
-	s_file_handle file;
+	s_file_handle file_handle;
 };
 static_assert(sizeof(s_close_file_task) == 0x4);
 
 struct s_get_file_size_task
 {
-	s_file_handle file;
-	long volatile* file_size;
+	s_file_handle file_handle;
+	dword volatile* file_size;
 };
 static_assert(sizeof(s_get_file_size_task) == 0x8);
 
 struct s_file_raw_handle_based_task
 {
-	s_file_handle file;
+	s_file_handle file_handle;
 };
 static_assert(sizeof(s_file_raw_handle_based_task) == 0x4);
 
@@ -219,21 +219,21 @@ static_assert(sizeof(s_simple_callback_task) == 0x120);
 
 union s_async_task
 {
-	s_create_file_task create_file;
-	s_read_position_task read_position;
-	s_write_position_task write_position;
-	s_copy_position_task copy_position;
-	s_set_file_size_task set_file_size;
-	s_delete_file_task delete_file;
-	s_enumerate_files_task enumerate_files;
-	s_read_entire_file_task read_entire_file;
-	s_write_buffer_to_file_task write_buffer_to_file;
-	s_close_file_task close_file;
-	s_get_file_size_task get_file_size;
-	s_file_raw_handle_based_task file_raw_handle_based;
-	s_font_loading_task font_loading;
-	s_configuration_enumeration_task configuration_enumeration;
-	s_simple_callback_task simple_callback;
+	s_create_file_task create_file_task;
+	s_read_position_task read_position_task;
+	s_write_position_task write_position_task;
+	s_copy_position_task copy_position_task;
+	s_set_file_size_task set_file_size_task;
+	s_delete_file_task delete_file_task;
+	s_enumerate_files_task enumerate_files_task;
+	s_read_entire_file_task read_entire_file_task;
+	s_write_buffer_to_file_task write_buffer_to_file_task;
+	s_close_file_task close_file_task;
+	s_get_file_size_task get_file_size_task;
+	s_file_raw_handle_based_task file_raw_handle_based_task;
+	s_font_loading_task font_loading_task;
+	s_configuration_enumeration_task configuration_enumeration_task;
+	s_simple_callback_task simple_callback_task;
 
 	byte storage[k_maximum_async_task_data_size];
 };
@@ -281,6 +281,7 @@ extern bool __cdecl async_task_change_priority(long task_id, e_async_priority pr
 extern long __cdecl async_tasks_in_queue();
 extern bool __cdecl async_test_completion_flag(c_synchronized_long* completion_flag);
 extern bool __cdecl async_usable();
+extern bool __cdecl async_thread_tick();
 extern void __cdecl async_yield_until_done_function(c_synchronized_long* done, bool(*yield_function)(c_synchronized_long*), bool idle, bool networking, bool spinner, e_yield_reason yield_reason);
 extern void __cdecl sub_508950(s_async_task_element* element);
 extern s_async_task_element* __cdecl async_task_add_free_list(bool a1);
@@ -291,6 +292,4 @@ extern bool __cdecl simple_yield_function(c_synchronized_long* done);
 extern s_async_task_element* __cdecl sub_508BD0();
 extern void __cdecl sub_508C00(s_async_task_element* element);
 extern void __cdecl sub_508C30(s_async_task_element* element);
-extern long __cdecl async_queue_simple_callback(e_async_completion(__cdecl* callback)(s_async_task* task, void* data, long data_size), void const* data, long data_size, e_async_priority priority, c_synchronized_long* done);
-extern e_async_completion __cdecl async_simple_callback_task_callback(s_async_task* task);
 

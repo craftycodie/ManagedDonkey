@@ -402,6 +402,11 @@ bool __cdecl network_session_interface_wants_main_menu_to_load()
 	return INVOKE(0x00454B90, network_session_interface_wants_main_menu_to_load);
 }
 
+bool __cdecl network_life_cycle_game_is_in_progress()
+{
+	return INVOKE(0x00454BB0, network_life_cycle_game_is_in_progress);
+}
+
 bool __cdecl network_squad_session_set_session_mode(e_network_session_mode session_mode)
 {
 	bool success = false;
@@ -413,7 +418,7 @@ bool __cdecl network_squad_session_set_session_mode(e_network_session_mode sessi
 		{
 			ASSERT(in_squad_session);
 
-			success = in_squad_session->get_session_parameters()->m_parameters_internal.session_mode.request_change(session_mode);
+			success = in_squad_session->get_session_parameters()->session_mode.request_change(session_mode);
 			ASSERT(success);
 		}
 	}
