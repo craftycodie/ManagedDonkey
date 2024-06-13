@@ -17,6 +17,8 @@ struct c_life_cycle_state_handler_matchmaking_arbitration :
 
 	byte __data[0x10];
 	s_arbitration_registration_result m_registration_result;
+
+	void update_();
 };
 static_assert(sizeof(c_life_cycle_state_handler_matchmaking_arbitration) == 0x1C0);
 

@@ -24,6 +24,7 @@ enum e_life_cycle_state_handler_flags
 };
 
 struct c_life_cycle_state_manager;
+struct c_network_session;
 struct c_life_cycle_state_handler
 {
 	virtual void update();
@@ -32,6 +33,8 @@ struct c_life_cycle_state_handler
 	virtual void exit(c_life_cycle_state_handler* handler);
 	virtual char const* get_state_string();
 	virtual void handle_missing_required_session_parameter(e_network_session_type session_type);
+
+	bool __cdecl setup_initial_participants(c_network_session*);
 
 	byte : 8;
 	byte : 8;

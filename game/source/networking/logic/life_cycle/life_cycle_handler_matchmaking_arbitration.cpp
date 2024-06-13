@@ -16,3 +16,13 @@ DATA_PATCH_DECLARE(0x004951C4, jump2, jump_bytes);
 const byte nop_bytes[] = { 0x90, 0x90 };
 DATA_PATCH_DECLARE(0x004952C4, not1, nop_bytes);
 DATA_PATCH_DECLARE(0x004952CF, not2, nop_bytes);
+
+//HOOK_DECLARE_CLASS_MEMBER(0x00494EF0, c_life_cycle_state_handler_matchmaking_arbitration, update_);
+//
+//void __thiscall c_life_cycle_state_handler_matchmaking_arbitration::update_()
+//{
+//	this->setup_initial_participants(this->m_manager->m_active_squad_session);
+//
+//	HOOK_INVOKE_CLASS_MEMBER(, c_life_cycle_state_handler_matchmaking_arbitration, update_);
+//}
+//

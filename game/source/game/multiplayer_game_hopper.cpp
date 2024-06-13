@@ -53,9 +53,9 @@ void __cdecl initialize_fake_hopper(
 	configuration_table->hopper_configuration_count = 2;
 	configuration_table->hopper_configurations[0].hopper_name = "Test Playlist";
 	configuration_table->hopper_configurations[0].hopper_type = 1;
-	configuration_table->hopper_configurations[0].ffa.minimum_player_count = 1;
+	configuration_table->hopper_configurations[0].ffa.minimum_player_count = 2;
 	configuration_table->hopper_configurations[0].ffa.maximum_player_count = 6;
-	configuration_table->hopper_configurations[0].gather_give_up_seconds = 15;
+	configuration_table->hopper_configurations[0].gather_give_up_seconds = 5;
 	configuration_table->hopper_configurations[0].chance_of_gathering[0] = 1;
 	configuration_table->hopper_configurations[0].veto_enabled = true;
 	configuration_table->hopper_configurations[0].rematch_group_formation = 1;
@@ -401,7 +401,7 @@ const byte players_established_patch_bytes[] = {0xB0, 0x01};
 DATA_PATCH_DECLARE(0x0045A406, players_established_return, players_established_patch_bytes);
 
 const byte session_has_minimum_player_count_to_start_game_in_hopper_bytes[] = { 0xB0, 0x01 };
-DATA_PATCH_DECLARE(0x0048DF19, session_has_minimum_player_count_to_start_game_in_hopper, session_has_minimum_player_count_to_start_game_in_hopper_bytes);
+//DATA_PATCH_DECLARE(0x0048DF19, session_has_minimum_player_count_to_start_game_in_hopper, session_has_minimum_player_count_to_start_game_in_hopper_bytes);
 
 e_session_game_start_error __cdecl multiplayer_game_is_playable(word hopper_identifier, bool is_matchmaking, bool check_hopper, c_network_session_membership const* session_membership, word* out_player_error_mask)
 {

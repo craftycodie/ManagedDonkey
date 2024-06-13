@@ -6,6 +6,10 @@
 
 struct c_matchmaking_seeker
 {
+public: 
+	bool __thiscall search_in_progress();
+	bool __thiscall get_session_to_join(struct s_suitable_matchmaking_session*);
+
 	byte_flags m_flags;
 	byte __pad1[0x3];
 	long m_current_session_search_index;

@@ -1407,6 +1407,15 @@
     <ClCompile Include="source\interface\gui_screens\player_select\gui_player_select_screen_widget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\networking\logic\logic_matchmaking_seeker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\networking\logic\life_cycle\life_cycle_state_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\networking\logic\life_cycle\life_cycle_handler_matchmaking_find_and_assemble_match.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\camera\camera.hpp">

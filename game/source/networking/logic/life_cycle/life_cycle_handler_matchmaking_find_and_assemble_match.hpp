@@ -16,6 +16,8 @@ struct c_life_cycle_state_handler_matchmaking_find_and_assemble_match :
 	byte __data19A5C[0x10];
 	s_matchmaking_session_properties m_matchmaking_desirability;
 	byte __data19B30[0x30];
+
+	void __thiscall update_joining();
 };
 static_assert(sizeof(c_life_cycle_state_handler_matchmaking_find_and_assemble_match) == 0x19B60);
 
