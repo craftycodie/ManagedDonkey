@@ -160,6 +160,10 @@ public:
 
 	bool is_peer_valid(long peer_index) const
 	{
+		//if (!m_shared_network_membership.peer_valid_mask.test(peer_index)) {
+		//	c_console::write_line("donkey:matchmaking Invalid Peer! %d", peer_index);
+		//	//return true;
+		//}
 		return m_shared_network_membership.peer_valid_mask.test(peer_index);
 	}
 

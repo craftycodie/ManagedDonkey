@@ -15,7 +15,6 @@ public:
 	void describe_status(char* buffer, long buffer_size) const;
 	bool need_to_generate_updates() const;
 
-protected:
 	c_simulation_world* m_world;
 	c_network_observer* m_observer;
 	c_network_session* m_session;

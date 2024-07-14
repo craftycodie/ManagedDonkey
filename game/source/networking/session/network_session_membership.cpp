@@ -55,6 +55,7 @@ long c_network_session_membership::get_peer_from_observer_channel(long observer_
 			;
 		}
 	}
+	c_console::write_line("donkey:matchmaking: get_peer_from_observer_channel for channel %d returned peer_index %d", observer_channel_index, peer_index);
 	return peer_index;
 }
 

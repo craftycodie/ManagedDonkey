@@ -993,6 +993,11 @@ void __cdecl network_debug_print(const char* format, ...)
 	case 0x01645E68: // MP/NET/STUB_LOG_PATH,STUB_LOG_FILTER: network_leaderboard_submit_query_for_user: submitting query for user %d (%S) to %d leaderboards
 	case 0x01645EF0: // MP/NET/STUB_LOG_PATH,STUB_LOG_FILTER: network_leaderboard_submit_query_for_user: failed to submit stats query for user %d
 	case 0x01646508: // MP/NET/STUB_LOG_PATH,STUB_LOG_FILTER: network_leaderboard_user_query_failed: user %d stats query failed [count %d]
+	
+	case 0x01611438: // MP/NET/SESSION,PARAMS: c_generic_network_session_parameter<bool>::set: [%s] parameter type %d [%s] being set
+	case 0x0162D958: // MP/NET/SESSION,PARAMS: c_generic_network_session_parameter<struct s_replicated_life_cycle_matchmaking_progress_search_criteria>::set: [%s] parameter type %d [%s] being set
+	case 0x0162D728: // MP/NET/SESSION,PARAMS: c_generic_network_session_parameter<struct s_replicated_life_cycle_matchmaking_progress>::set: [%s] parameter type %d [%s] being set
+	case 0x0164B958: // MP/NET/STUB_LOG_PATH,STUB_LOG_FILTER: c_session_tracker::update_qos_send: unable to initiate qos type %d to [%d] target sessions
 		return;
 	}
 

@@ -4,7 +4,6 @@
 #include "cseries/cseries.hpp"
 #include "networking/online/online_session.hpp"
 #include "networking/transport/transport_security.hpp"
-#include "xlive/xdefs.hpp"
 
 enum e_session_overlapped_task_context
 {
@@ -40,6 +39,7 @@ struct c_managed_session_overlapped_task :
 	c_overlapped_task
 {
 	void __thiscall process_add_players(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session, qword const* a4, bool const* a5, bool const* a6, long a7);
+	bool __thiscall process_add_players_immediately(s_online_session* a1, qword const* a2, bool const* a3, bool const* a4, long a5);
 	void __thiscall process_create(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session, word_flags flags);
 	void __thiscall process_delete(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session);
 	void __thiscall process_game_end(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session);
@@ -47,7 +47,7 @@ struct c_managed_session_overlapped_task :
 	void __thiscall process_game_start(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session);
 	void __thiscall process_remove_players(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session, qword const* a4, bool const* a5, long player_count);
 	void __thiscall process_session_host_migrate(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session, bool is_host, s_transport_session_description* host_migration_description);
-	dword __thiscall start_(PXOVERLAPPED overlapped);
+	dword __thiscall start_(void* overlapped);
 
 	void __thiscall complete_();
 	void __thiscall failure_(dword calling_result, dword overlapped_error, dword overlapped_extended_error);
@@ -72,6 +72,8 @@ struct c_managed_session_overlapped_task :
 	long m_player_count;
 	qword m_player_xuids[16];
 	dword_flags m_private_slots[16];
+
+protected: void __thiscall filter_local_users(long, unsigned __int64 const*, bool const*, bool const*);
 };
 static_assert(sizeof(c_managed_session_overlapped_task) == 0x100);
 
@@ -142,4 +144,3 @@ extern char const* __cdecl managed_session_get_id_string(long managed_session_in
 extern void __cdecl online_session_manager_dispose();
 extern void __cdecl online_session_manager_initialize();
 extern void __cdecl online_session_manager_update();
-

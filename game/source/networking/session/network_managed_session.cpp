@@ -1,7 +1,8 @@
 #include "networking/session/network_managed_session.hpp"
 #include "memory/module.hpp"
 
-#include "memory/module.hpp"
+#include <networking/logic/network_life_cycle.hpp>
+#include "networking/session/network_session.hpp"
 
 REFERENCE_DECLARE(0x02247448, s_online_session_manager_globals, online_session_manager_globals);
 
@@ -134,4 +135,3 @@ void __thiscall c_managed_session_overlapped_task::success_(dword return_result)
 	m_callback_value1 = return_result;
 	m_callback_value0 = true;
 }
-

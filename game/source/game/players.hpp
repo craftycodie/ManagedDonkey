@@ -850,6 +850,7 @@ extern void players_debug_render();
 extern long __cdecl player_index_from_unit_index(long unit_index);
 extern bool __cdecl player_is_reading_terminal();
 extern long __cdecl player_new(long player_array_index, game_player_options const* options, bool joined_in_progress);
+extern void __cdecl player_reset(long player_index, bool initial, bool joined_in_progress, game_player_options const* options);
 extern void __cdecl player_set_unit_index(long player_index, long unit_index);
 extern void __cdecl player_suppress_action(long player_index, long player_suppress_action_type);
 extern bool __cdecl player_teleport(long player_index, long object_index, real_point3d const* position);

@@ -96,9 +96,64 @@ bool c_network_session::leaving_session() const
 	return DECLFUNC(0x00434E30, bool, __thiscall, c_network_session const*)(this);
 }
 
-bool c_network_session::channel_is_authoritative(c_network_channel* channel)
+HOOK_DECLARE_CLASS_MEMBER(0x0045A9E0, c_network_session, channel_is_authoritative);
+bool __thiscall c_network_session::channel_is_authoritative(c_network_channel* channel)
 {
-	return DECLFUNC(0x0045A9E0, bool, __thiscall, c_network_session*, c_network_channel*)(this, channel);
+	//return DECLFUNC(0x0045A9E0, bool, __thiscall, c_network_session*, c_network_channel*)(this, channel);
+
+	int observer_channel_index = -2;
+	int peer_from_observer_channel = -2;
+
+	m_local_state = this->m_local_state;
+	bool result = (m_local_state > _network_session_state_peer_join_abort
+		|| m_local_state == _network_session_state_peer_joining)
+		&& m_local_state != _network_session_state_host_established
+		&& m_local_state != _network_session_state_host_disband
+		&& (observer_channel_index = this->m_observer->observer_channel_find_by_network_channel(
+			this->m_session_index,
+			channel),
+			peer_from_observer_channel = this->m_session_membership.get_peer_from_observer_channel(
+				observer_channel_index),
+			peer_from_observer_channel != -1)
+		&& peer_from_observer_channel == this->m_session_membership.m_shared_network_membership.host_peer_index;
+
+	if (!result) {
+		c_console::write_line("donkey:matchmaking: channel_is_authoritative returning false. local_state = %d, session_index = %d, observer_channel_index = %d, peer_from_observer_channel = %d, host_peer_index = %d",
+			m_local_state, this->m_session_index, observer_channel_index, peer_from_observer_channel, this->m_session_membership.m_shared_network_membership.host_peer_index);
+		c_console::write_line("donkey:matchmaking: More info... session_index = %d, m_session_class = %d, m_session_type = %d",
+			this->m_session_index, this->m_session_class.get(), this->m_session_type.get());
+		c_console::write_line("donkey:matchmaking: Even more info... channel state = %d %s",
+			channel->get_state(), channel->get_state_string(channel->get_state()));
+
+		observer_channel_index = this->m_observer->observer_channel_find_by_network_channel(
+			0,
+			channel);
+		peer_from_observer_channel = this->m_session_membership.get_peer_from_observer_channel(
+			observer_channel_index);
+
+		c_console::write_line("donkey:matchmaking: Session 0 authoritative? %d",
+			peer_from_observer_channel == this->m_session_membership.m_shared_network_membership.host_peer_index);
+
+		observer_channel_index = this->m_observer->observer_channel_find_by_network_channel(
+			1,
+			channel);
+		peer_from_observer_channel = this->m_session_membership.get_peer_from_observer_channel(
+			observer_channel_index);
+
+		c_console::write_line("donkey:matchmaking: Session 1 authoritative? %d",
+			peer_from_observer_channel == this->m_session_membership.m_shared_network_membership.host_peer_index);
+
+		observer_channel_index = this->m_observer->observer_channel_find_by_network_channel(
+			2,
+			channel);
+		peer_from_observer_channel = this->m_session_membership.get_peer_from_observer_channel(
+			observer_channel_index);
+
+		c_console::write_line("donkey:matchmaking: Session 2 authoritative? %d",
+			peer_from_observer_channel == this->m_session_membership.m_shared_network_membership.host_peer_index);
+	}
+
+	return result;
 }
 
 void c_network_session::destroy_session()
@@ -538,7 +593,7 @@ e_network_session_mode c_network_session::session_mode() const
 
 s_network_session_player* c_network_session::get_player(long player_index)
 {
-	ASSERT(!disconnected());
+	//ASSERT(!disconnected());
 
 	return &m_session_membership.m_shared_network_membership.players[player_index];
 }

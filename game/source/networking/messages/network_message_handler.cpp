@@ -141,6 +141,8 @@ void __cdecl c_network_message_handler::handle_channel_message(c_network_channel
 
 	network_message_converter_t converter = { .message_storage = message_storage };
 
+	c_console::write_line("donkey:matchmaking: c_network_message_handler::handle_channel_message with message_type %d", message_type);
+
 	switch (message_type)
 	{
 	case _network_message_connect_establish:
@@ -1132,6 +1134,11 @@ void __cdecl c_network_message_handler::handle_parameters_update(c_network_chann
 	//DECLFUNC(0x0049D550, void, __thiscall, c_network_message_handler*, c_network_channel*, s_network_message_parameters_update const*)(this, channel, message);
 
 	c_network_session* session = m_session_manager->get_session(&message->session_id);
+	c_console::write_line("donkey:matchmaking: c_network_message_handler::handle_parameters_update for session id %s session index %d managed session index %d initial? %d", transport_secure_identifier_get_string(&message->session_id), session->m_session_index, session->m_managed_session_index, message->initial_update);
+	c_console::write_line("donkey:matchmaking: c_network_message_handler::handle_parameters_update managed session 0 id %s", managed_session_get_id_string(0));
+	c_console::write_line("donkey:matchmaking: c_network_message_handler::handle_parameters_update managed session 1 id %s", managed_session_get_id_string(1));
+	c_console::write_line("donkey:matchmaking: c_network_message_handler::handle_parameters_update managed session 2 id %s", managed_session_get_id_string(2));
+
 	if (session && session->channel_is_authoritative(channel))
 	{
 		if (!session->handle_parameters_update(message))

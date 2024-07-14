@@ -199,6 +199,11 @@ COMMAND_CALLBACK_DECLARE(levels_add_map_solo);
 COMMAND_CALLBACK_DECLARE(levels_add_fake_map_multi);
 COMMAND_CALLBACK_DECLARE(levels_add_map_multi);
 
+COMMAND_CALLBACK_DECLARE(mm_print_session);
+COMMAND_CALLBACK_DECLARE(mm_find_session);
+COMMAND_CALLBACK_DECLARE(mm_debug);
+
+
 //-----------------------------------------------------------------------------
 
 s_command const k_registered_commands[] =
@@ -240,102 +245,106 @@ s_command const k_registered_commands[] =
 	COMMAND_CALLBACK_REGISTER(game_all_quiet, 0, "", "returns FALSE if there are bad guys around, projectiles in the air, etc.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 	COMMAND_CALLBACK_REGISTER(game_save, 0, "", "checks to see if it is safe to save game, then saves (gives up after 8 seconds)\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 	COMMAND_CALLBACK_REGISTER(game_save_cancel, 0, "", "cancels any pending game_save, timeout or not\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(game_save_no_timeout, 0, "", "checks to see if it is safe to save game, then saves (this version never gives up)\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(game_save_immediate, 0, "", "disregards player's current situation and saves (BE VERY CAREFUL!)\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(game_save_cinematic_skip, 0, "", "don't use this, except in one place.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(game_saving, 0, "", "checks to see if the game is trying to save the map.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(game_reverted, 0, "", "don't use this for anything, you black-hearted bastards.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(game_save_no_timeout, 0, "", "checks to see if it is safe to save game, then saves (this version never gives up)\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(game_save_immediate, 0, "", "disregards player's current situation and saves (BE VERY CAREFUL!)\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(game_save_cinematic_skip, 0, "", "don't use this, except in one place.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(game_saving, 0, "", "checks to see if the game is trying to save the map.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(game_reverted, 0, "", "don't use this for anything, you black-hearted bastards.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(net_session_create, 2, "<string> <string>", "<ui_game_mode> <advertisement_mode> creates a session to play\r\nNETWORK SAFE: No, for mainmenu only"),
-	COMMAND_CALLBACK_REGISTER(net_session_add, 1, "<string>", "<ip:port> adds a session from the given ip:port to the local games browser \r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(net_session_create, 2, "<string> <string>", "<ui_game_mode> <advertisement_mode> creates a session to play\r\nNETWORK SAFE: No, for mainmenu only"),
+		COMMAND_CALLBACK_REGISTER(net_session_add, 1, "<string>", "<ip:port> adds a session from the given ip:port to the local games browser \r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(net_test_ping, 0, "", "network test: sends a ping\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(net_test_ping_directed, 1, "<string>", "<ip:port> network test: sends a ping to a specific address\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(net_test_text_chat, 1, "<string>", "<message> network test: sends a message\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(net_test_text_chat_directed, 2, "<string> <string>", "<ip:port> <message> network test: sends a message to a specific address\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(net_test_ping, 0, "", "network test: sends a ping\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(net_test_ping_directed, 1, "<string>", "<ip:port> network test: sends a ping to a specific address\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(net_test_text_chat, 1, "<string>", "<message> network test: sends a message\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(net_test_text_chat_directed, 2, "<string> <string>", "<ip:port> <message> network test: sends a message to a specific address\r\nNETWORK SAFE: Yes"),
 
-	COMMAND_CALLBACK_REGISTER(net_test_map_name, 1, "<string>", "network test: sets the name of the scenario to play\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(net_test_variant, 1, "<string>", "network test: sets the game variant to play\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(net_test_reset_objects, 0, "", "network test: resets all objects on the map\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(net_test_session_mode, 1, "<string>", "network test: sets the session mode to play\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(net_test_ui_game_mode, 1, "<string>", "network test: sets the ui game mode to play\r\nNETWORK SAFE: No, for mainmenu only"),
-	COMMAND_CALLBACK_REGISTER(net_test_advertisement_mode, 1, "<string>", "network test: sets the advertisement mode to play\r\nNETWORK SAFE: No, for mainmenu only"),
-	COMMAND_CALLBACK_REGISTER(net_test_game_variant_parameter, 2, "<string> <long>", "network test: sets a parameter of the current game variant\r\nNETWORK SAFE: No, for mainmenu only"),
+		COMMAND_CALLBACK_REGISTER(net_test_map_name, 1, "<string>", "network test: sets the name of the scenario to play\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(net_test_variant, 1, "<string>", "network test: sets the game variant to play\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(net_test_reset_objects, 0, "", "network test: resets all objects on the map\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(net_test_session_mode, 1, "<string>", "network test: sets the session mode to play\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(net_test_ui_game_mode, 1, "<string>", "network test: sets the ui game mode to play\r\nNETWORK SAFE: No, for mainmenu only"),
+		COMMAND_CALLBACK_REGISTER(net_test_advertisement_mode, 1, "<string>", "network test: sets the advertisement mode to play\r\nNETWORK SAFE: No, for mainmenu only"),
+		COMMAND_CALLBACK_REGISTER(net_test_game_variant_parameter, 2, "<string> <long>", "network test: sets a parameter of the current game variant\r\nNETWORK SAFE: No, for mainmenu only"),
 
-	COMMAND_CALLBACK_REGISTER(net_build_network_config, 0, "", "writes a new network configuration file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(net_build_network_config, 0, "", "writes a new network configuration file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(net_build_game_variant, 1, "<string>", "writes the current game variant to a file\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(net_build_game_variant, 1, "<string>", "writes the current game variant to a file\r\nNETWORK SAFE: Yes"),
 
-	COMMAND_CALLBACK_REGISTER(net_verify_game_variant, 1, "<string>", "verifies the contents of a game variant file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(net_load_and_use_game_variant, 1, "<string>", "loads the contents of a game variant file and submits to networking for use in the current game\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(net_verify_game_variant, 1, "<string>", "verifies the contents of a game variant file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(net_load_and_use_game_variant, 1, "<string>", "loads the contents of a game variant file and submits to networking for use in the current game\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(net_verify_packed_game_variant, 1, "<string>", "verifies the contents of a packed game variant file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(net_load_and_use_packed_game_variant, 1, "<string>", "loads the contents of a packed game variant file and submits to networking for use in the current game\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(net_verify_packed_game_variant, 1, "<string>", "verifies the contents of a packed game variant file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(net_load_and_use_packed_game_variant, 1, "<string>", "loads the contents of a packed game variant file and submits to networking for use in the current game\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(net_build_map_variant, 1, "<string>", "writes the current map variant to a file\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(net_build_map_variant, 1, "<string>", "writes the current map variant to a file\r\nNETWORK SAFE: Yes"),
 
-	COMMAND_CALLBACK_REGISTER(net_verify_map_variant, 1, "<string>", "verifies the contents of a map variant file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(net_load_and_use_map_variant, 1, "<string>", "loads the contents of a map variant file and submits to networking for use in the current game\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(net_verify_map_variant, 1, "<string>", "verifies the contents of a map variant file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(net_load_and_use_map_variant, 1, "<string>", "loads the contents of a map variant file and submits to networking for use in the current game\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(net_verify_packed_map_variant, 1, "<string>", "verifies the contents of a packed map variant file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(net_load_and_use_packed_map_variant, 1, "<string>", "loads the contents of a packed map variant file and submits to networking for use in the current game\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(net_verify_packed_map_variant, 1, "<string>", "verifies the contents of a packed map variant file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(net_load_and_use_packed_map_variant, 1, "<string>", "loads the contents of a packed map variant file and submits to networking for use in the current game\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(game_export_variant_settings, 1, "<string>", "export the current game engine variant settings to the specified text file\r\nNETWORK SAFE: No"),
+		COMMAND_CALLBACK_REGISTER(game_export_variant_settings, 1, "<string>", "export the current game engine variant settings to the specified text file\r\nNETWORK SAFE: No"),
 
-	COMMAND_CALLBACK_REGISTER(alert_carry, 1, "<long>", "<user_index> raise/lower player weapon toggle\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(alert_carry, 1, "<long>", "<user_index> raise/lower player weapon toggle\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(online_set_is_connected_to_live, 1, "<boolean>", "sets connected to live\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(online_user_set_name, 1, "<string>", "sets the name of the first user\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(online_set_is_connected_to_live, 1, "<boolean>", "sets connected to live\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(online_user_set_name, 1, "<string>", "sets the name of the first user\r\nNETWORK SAFE: Yes"),
 
-	COMMAND_CALLBACK_REGISTER(mp_players_by_team, 1, "<long>", "<mp_team> given a team index, returns an object list containing all living player objects belonging to that team\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(deterministic_end_game, 0, "", "end game deterministically, by inserting a simulation queue event\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(mp_active_player_count_by_team, 1, "<long>", "<mp_team> given a team index, returns an object list containing all living player objects belonging to that team\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(mp_game_won, 1, "<short>", "<mp_team> given a team index, declares the game a victory for that team and a loss for all others\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(mp_respawn_override_timers, 1, "<short>", "<mp_team> causes all players on the specified team waiting to respawn (due to timer) to respawn immediately\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(mp_ai_allegiance, 2, "<short> <short>", "<team> <mp_team> causes an allegiance to be formed between an AI squad team and a multiplayer team\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(mp_allegiance, 2, "<short> <short>", "<mp_team> <mp_team> create an allegiance between two multiplayer teams\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(mp_object_belongs_to_team, 2, "<long> <short>", "<object> <mp_team> causes specified object to belong to the given team, so that only that team can pick it up\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(mp_weapon_belongs_to_team, 2, "<long> <short>", "<object> <mp_team> causes specified weapon to belong to the given team, so that only that team can pick it up\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mp_players_by_team, 1, "<long>", "<mp_team> given a team index, returns an object list containing all living player objects belonging to that team\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(deterministic_end_game, 0, "", "end game deterministically, by inserting a simulation queue event\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mp_active_player_count_by_team, 1, "<long>", "<mp_team> given a team index, returns an object list containing all living player objects belonging to that team\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mp_game_won, 1, "<short>", "<mp_team> given a team index, declares the game a victory for that team and a loss for all others\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mp_respawn_override_timers, 1, "<short>", "<mp_team> causes all players on the specified team waiting to respawn (due to timer) to respawn immediately\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mp_ai_allegiance, 2, "<short> <short>", "<team> <mp_team> causes an allegiance to be formed between an AI squad team and a multiplayer team\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mp_allegiance, 2, "<short> <short>", "<mp_team> <mp_team> create an allegiance between two multiplayer teams\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mp_object_belongs_to_team, 2, "<long> <short>", "<object> <mp_team> causes specified object to belong to the given team, so that only that team can pick it up\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mp_weapon_belongs_to_team, 2, "<long> <short>", "<object> <mp_team> causes specified weapon to belong to the given team, so that only that team can pick it up\r\nNETWORK SAFE: Yes"),
 
-	COMMAND_CALLBACK_REGISTER(mp_debug_goal_object_boundary_geometry, 1, "<bool>", "toggle debug geometry for multiplayer goal objects\r\nNETWORK SAFE: No"),
+		COMMAND_CALLBACK_REGISTER(mp_debug_goal_object_boundary_geometry, 1, "<bool>", "toggle debug geometry for multiplayer goal objects\r\nNETWORK SAFE: No"),
 
-	COMMAND_CALLBACK_REGISTER(load_preferences_from_file, 1, "<string>", "<preferences filename> loads preferences from the specified file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(load_customization_from_file, 1, "<string>", "<customization filename> loads customization from the specified file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(load_preferences_from_file, 1, "<string>", "<preferences filename> loads preferences from the specified file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(load_customization_from_file, 1, "<string>", "<customization filename> loads customization from the specified file\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(cheat_all_powerups, 0, "", "drops all powerups near player\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(cheat_all_vehicles, 0, "", "drops all vehicles on player\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(cheat_all_weapons, 0, "", "drops all weapons near player\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(cheat_teleport_to_camera, 0, "", "teleports player to camera location\r\nNETWORK SAFE: Yes"),
-	COMMAND_CALLBACK_REGISTER(debug_menu_rebuild, 0, "", "Reparses the debug menu from the text file."),
+		COMMAND_CALLBACK_REGISTER(cheat_all_powerups, 0, "", "drops all powerups near player\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(cheat_all_vehicles, 0, "", "drops all vehicles on player\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(cheat_all_weapons, 0, "", "drops all weapons near player\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(cheat_teleport_to_camera, 0, "", "teleports player to camera location\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(debug_menu_rebuild, 0, "", "Reparses the debug menu from the text file."),
 
-	COMMAND_CALLBACK_REGISTER(drop, 1, "<string>", "drops the named tag e.g. objects\\vehicles\\banshee\\banshee.vehicle\r\nNETWORK SAFE: Yes, for objects"),
-	COMMAND_CALLBACK_REGISTER(drop_variant, 2, "<string> <string>", "drops the named tag e.g. objects\\vehicles\\banshee\\banshee.vehicle using the specified variant name\r\n"),
-	COMMAND_CALLBACK_REGISTER(drop_permutation, 2, "<string> <string>", "drops the named tag e.g. objects\\characters\\brute\\brute.biped using the specified permutation. permutations are specified as a comma-delimited string of region=permutation pairs (e.g. region1=permutation1,region2=permutation2).\r\n"),
+		COMMAND_CALLBACK_REGISTER(drop, 1, "<string>", "drops the named tag e.g. objects\\vehicles\\banshee\\banshee.vehicle\r\nNETWORK SAFE: Yes, for objects"),
+		COMMAND_CALLBACK_REGISTER(drop_variant, 2, "<string> <string>", "drops the named tag e.g. objects\\vehicles\\banshee\\banshee.vehicle using the specified variant name\r\n"),
+		COMMAND_CALLBACK_REGISTER(drop_permutation, 2, "<string> <string>", "drops the named tag e.g. objects\\characters\\brute\\brute.biped using the specified permutation. permutations are specified as a comma-delimited string of region=permutation pairs (e.g. region1=permutation1,region2=permutation2).\r\n"),
 
-	COMMAND_CALLBACK_REGISTER(ai_enable, 1, "<boolean>", "turns all AI on or off.\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(ai_enable, 1, "<boolean>", "turns all AI on or off.\r\nNETWORK SAFE: Yes"),
 
-	COMMAND_CALLBACK_REGISTER(director_debug_camera, 1, "<boolean>", "enable/disable camera debugging\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(camera_control, 1, "<boolean>", "toggles script control of the camera.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(camera_set_mode, 2, "<long> <long>", "<user_index> <camera_mode> sets user's camera perspective\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(debug_camera_save, 0, "", "saves the camera position and facing.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(debug_camera_load, 0, "", "loads the saved camera position and facing.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(crash, 1, "<string>", "crashes (for debugging).\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(status, 0, "", "prints the value of all global status variables.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(player_force_mode, 1, "<string_id>", "force your will upon the player\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(director_debug_camera, 1, "<boolean>", "enable/disable camera debugging\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(camera_control, 1, "<boolean>", "toggles script control of the camera.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(camera_set_mode, 2, "<long> <long>", "<user_index> <camera_mode> sets user's camera perspective\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(debug_camera_save, 0, "", "saves the camera position and facing.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(debug_camera_load, 0, "", "loads the saved camera position and facing.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(crash, 1, "<string>", "crashes (for debugging).\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(status, 0, "", "prints the value of all global status variables.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(player_force_mode, 1, "<string_id>", "force your will upon the player\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(test_download_storage_file, 2, "<string> <string>", "<url> <filename> downloads a file from LSP to the client\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(test_download_storage_file, 2, "<string> <string>", "<url> <filename> downloads a file from LSP to the client\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(lsp_info_get, 0, "", "gets the LSP server info\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(lsp_info_set, 1, "<string>", "<ip:port> sets the LSP server address and port\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(lsp_info_get, 0, "", "gets the LSP server info\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(lsp_info_set, 1, "<string>", "<ip:port> sets the LSP server address and port\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(player_ragdoll, 0, "", "ragdolls the players biped.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(player_drop_weapon, 0, "", "drops the players held weapon.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(player_add_weapon, 2, "<string> <long>", "<weapon_definition_index> <weapon_addition_method> gives the player a weapon.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(player_ragdoll, 0, "", "ragdolls the players biped.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(player_drop_weapon, 0, "", "drops the players held weapon.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(player_add_weapon, 2, "<string> <long>", "<weapon_definition_index> <weapon_addition_method> gives the player a weapon.\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-	COMMAND_CALLBACK_REGISTER(levels_add_fake_map_solo, 1, "<string>", "<scenario_path> adds a fake map for campaign\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(levels_add_map_solo, 2, "<long> <string>", "<map_id> <scenario_path> adds a map with the specified map id for campaign\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(levels_add_fake_map_multi, 1, "<string>", "<scenario_path> adds a fake map for multiplayer\r\nNETWORK SAFE: Unknown, assumed unsafe"),
-	COMMAND_CALLBACK_REGISTER(levels_add_map_multi, 2, "<long> <string>", "<map_id> <scenario_path> adds a map with the specified map id for multiplayer\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(levels_add_fake_map_solo, 1, "<string>", "<scenario_path> adds a fake map for campaign\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(levels_add_map_solo, 2, "<long> <string>", "<map_id> <scenario_path> adds a map with the specified map id for campaign\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(levels_add_fake_map_multi, 1, "<string>", "<scenario_path> adds a fake map for multiplayer\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+		COMMAND_CALLBACK_REGISTER(levels_add_map_multi, 2, "<long> <string>", "<map_id> <scenario_path> adds a map with the specified map id for multiplayer\r\nNETWORK SAFE: Unknown, assumed unsafe"),
+
+		COMMAND_CALLBACK_REGISTER(mm_print_session, 1, "<string>", "<ip_address> print session details for another player to join, provide the IP of the other player\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mm_find_session, 1, "<string>", "<session_string> print session details for another player to join\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mm_debug, 0, "", ""),
 };
 
 extern void command_tokenize(char const* input, tokens_t& tokens, long* token_count);

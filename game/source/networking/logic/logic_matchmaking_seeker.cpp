@@ -32,29 +32,8 @@ bool __thiscall c_matchmaking_seeker::search_in_progress()
 }
 
 bool __thiscall c_matchmaking_seeker::get_session_to_join(s_suitable_matchmaking_session* session_out)
-{
-	static s_transport_session_description description = {
-		.id = {
-			0x77777777,
-			{ 0x7777, 0x7777 },
-			{ 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77 }
-		},
-		.address = {
-			0x77777777,
-			{ 0x7777, 0x7777 },
-			{ 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77 }
-		},
-		.key = {
-			0x77777777,
-			{ 0x7777, 0x7777 },
-			{ 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77 }
-		}
-	};
+{ 
 
-	network_session_tracker_track_session("UNKNOWN", &description);
-
-	session_tracker_globals.session_tracker.m_sessions[0].qos_received[0] = true;
-	session_tracker_globals.session_tracker.m_sessions[0].qos_received[1] = true;
 
 	bool result;
 

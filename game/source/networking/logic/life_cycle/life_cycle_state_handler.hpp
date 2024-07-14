@@ -34,7 +34,8 @@ struct c_life_cycle_state_handler
 	virtual char const* get_state_string();
 	virtual void handle_missing_required_session_parameter(e_network_session_type session_type);
 
-	bool __cdecl setup_initial_participants(c_network_session*);
+	bool __thiscall setup_initial_participants(c_network_session*);
+	//bool __thiscall pick_teams_for_group(bool randomize_teams_for_team_selection);
 
 	byte : 8;
 	byte : 8;

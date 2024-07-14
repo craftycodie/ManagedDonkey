@@ -66,14 +66,15 @@ long c_network_observer::observer_channel_find_by_network_channel(long owner_typ
 {
     //return DECLFUNC(0x00447150, long, __thiscall, c_network_observer const*, long, c_network_channel*)(this, owner_type, channel);
 
-    //ASSERT(owner_type >= 0 && owner_type < k_network_observer_owner_count);
+    //ASSERT(owner_type >= 0 && owner_type < k_network_observer_owner_count);;
     ASSERT(channel != NULL);
 
     s_channel_observer const* observer = find_observer_by_channel(channel);
     ASSERT(observer != NULL);
 
-    if (observer->state && TEST_BIT(observer->owner_flags, owner_type))
+    if (observer->state && TEST_BIT(observer->owner_flags, owner_type)) {
         return observer - m_channel_observers;
+    }
 
     return NONE;
 }

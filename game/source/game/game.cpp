@@ -26,8 +26,10 @@
 #include "tag_files/files_windows.hpp"
 #include "test/test_functions.hpp"
 
+HOOK_DECLARE(0x00530B90, game_create_players);
 HOOK_DECLARE(0x00533120, game_tick);
 HOOK_DECLARE(0x006961B0, game_launch_has_initial_script);
+
 
 bool g_debug_survival_mode = false;
 
@@ -147,24 +149,29 @@ void __cdecl game_create_objects(e_game_create_mode mode)
 
 void __cdecl game_create_players()
 {
-	INVOKE(0x00530B90, game_create_players);
+	//INVOKE(0x00530B90, game_create_players);
 
-	//if (!main_game_reset_in_progress())
-	//{
-	//	game_options* options = game_options_get();
-	//	ASSERT(!simulation_reset_in_progress());
-	//
-	//	players_set_machines(options->machine_options.valid_machine_mask, options->machine_options.machines);
-	//	players_set_local_machine(options->machine_options.local_machine_exists ? &options->machine_options.local_machine : NULL);
-	//	for (long i = 0; i < 16; i++)
-	//	{
-	//		if (options->players[i].player_valid)
-	//			player_new(i, &options->players[i], false);
-	//	}
-	//
-	//	players_finish_creation();
-	//	simulation_notify_players_created();
-	//}
+	c_console::write_line("donkey:matchmaking game_create_players");
+
+	if (!main_game_reset_in_progress())
+	{
+		game_options* options = game_options_get();
+		ASSERT(!simulation_reset_in_progress());
+	
+		players_set_machines(options->machine_options.valid_machine_mask, options->machine_options.machines);
+		players_set_local_machine(options->machine_options.local_machine_exists ? &options->machine_options.local_machine : NULL);
+		for (long i = 0; i < 16; i++)
+		{
+			c_console::write_line("donkey:matchmaking creating player %d, valid = %s", i, options->players[i].player_valid ? "YES" : "NO");
+
+
+			if (options->players[i].player_valid)
+				player_new(i, &options->players[i], false);
+		}
+	
+		players_finish_creation();
+		simulation_notify_players_created();
+	}
 }
 
 void __cdecl game_create_unlock_resources(e_game_create_mode mode, long& lock)
@@ -688,10 +695,30 @@ void __cdecl game_options_validate(game_options* options)
 }
 
 //.text:005326B0 ; void __cdecl game_options_validate_for_saved_game(long)
-
+HOOK_DECLARE(0x005326F0, game_options_verify);
 bool __cdecl game_options_verify(game_options const* options, char* error_string, long error_string_length)
 {
-	return INVOKE(0x005326F0, game_options_verify, options, error_string, error_string_length);
+	c_console::write_line("donkey:matchmaking game_options_verify");
+	c_console::write_line("machine 1 = %d %I64u", options->dump_machine_index, options->game_instance);
+
+
+	c_console::write_line("machines %s %d", options->machine_options.local_machine_exists ? "EXISTS" : "DOES NOT EXIST", options->machine_options.valid_machine_mask);
+
+	//c_console::write_line("machine 1 = %I64u", options->machine_options.machines[0]);
+	//c_console::write_line("machine 2 = %I64u", options->machine_options.machines[1]);
+	//c_console::write_line("machine 3 = %I64u", options->machine_options.machines[2]);
+
+
+	const char* valid = "VALID";
+	const char* invalid = "INVALID";
+
+	c_console::write_line("player 1 = %hd / %s", options->players[0].user_index, options->players[0].player_valid ? valid : invalid);
+	c_console::write_line("player 2 = %hd / %s", options->players[1].user_index, options->players[1].player_valid ? valid : invalid);
+	c_console::write_line("player 3 = %hd / %s", options->players[2].user_index, options->players[2].player_valid ? valid : invalid);
+
+	bool result;
+	HOOK_INVOKE(result =, game_options_verify, options, error_string, error_string_length);
+	return result;
 }
 
 e_game_playback_type __cdecl game_playback_get()

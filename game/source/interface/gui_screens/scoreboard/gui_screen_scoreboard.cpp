@@ -331,8 +331,8 @@ void __thiscall c_gui_scoreboard_data::_update_for_scoreboard_mode(bool a1, bool
 		{
 			player_datum* player = player_iterator.get_datum();
 			long player_iterator_index = player_iterator.get_index();
-
 			long network_player_index = user_interface_squad_get_player_index(&player->player_identifier);
+
 			if (player->configuration.host.team_index != NONE)
 			{
 				bool dead = !TEST_BIT(player->flags, _player_initial_spawn_bit) && player->unit_index == NONE && game_in_progress() && !game_is_finished() && !simulation_starting_up() && game_engine_in_round();
