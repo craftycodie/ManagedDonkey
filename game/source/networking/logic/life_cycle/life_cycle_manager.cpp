@@ -42,8 +42,8 @@ void c_life_cycle_state_manager::set_current_state(e_life_cycle_state state, lon
 		ASSERT(from_handler != NULL);
 		ASSERT(to_handler != NULL);
 
-		from_handler->exit(to_handler);
-		to_handler->enter(from_handler, entry_data_size, entry_data);
+		from_handler->vtable->exit(to_handler);
+		to_handler->vtable->enter(from_handler, entry_data_size, entry_data);
 	}
 }
 

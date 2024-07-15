@@ -158,6 +158,41 @@ void __cdecl game_create_players()
 		game_options* options = game_options_get();
 		ASSERT(!simulation_reset_in_progress());
 	
+		c_console::write_line("donkey:matchmaking valid_machine_mask = %d, local_machine_exists = %s, local_machine = %d %d %d %d", 
+			options->machine_options.valid_machine_mask, 
+			options->machine_options.local_machine_exists ? "YES" : "NO",
+			options->machine_options.local_machine.parts[0],
+			options->machine_options.local_machine.parts[1],
+			options->machine_options.local_machine.parts[2],
+			options->machine_options.local_machine.parts[3]
+		);
+
+		c_console::write_line("machine 1 = %d %d %d %d", options->machine_options.machines[0].parts[0], options->machine_options.machines[0].parts[1], options->machine_options.machines[0].parts[2], options->machine_options.machines[0].parts[3]);
+		c_console::write_line("machine 2 = %d %d %d %d", options->machine_options.machines[1].parts[0], options->machine_options.machines[1].parts[1], options->machine_options.machines[1].parts[2], options->machine_options.machines[1].parts[3]);
+		c_console::write_line("machine 3 = %d %d %d %d", options->machine_options.machines[2].parts[0], options->machine_options.machines[2].parts[1], options->machine_options.machines[2].parts[2], options->machine_options.machines[2].parts[3]);
+
+		c_console::write_line("player 1 = %hd / %s", options->players[0].user_index, options->players[0].player_valid ? "YES" : "NO");
+		c_console::write_line("machine = %d %d %d %d",
+			options->players[0].machine_identifier.parts[0],
+			options->players[0].machine_identifier.parts[1],
+			options->players[0].machine_identifier.parts[2],
+			options->players[0].machine_identifier.parts[3]
+		);
+		c_console::write_line("player 2 = %hd / %s", options->players[1].user_index, options->players[1].player_valid ? "YES" : "NO");
+		c_console::write_line("machine = %d %d %d %d",
+			options->players[1].machine_identifier.parts[0],
+			options->players[1].machine_identifier.parts[1],
+			options->players[1].machine_identifier.parts[2],
+			options->players[1].machine_identifier.parts[3]
+		);
+		c_console::write_line("player 3 = %hd / %s", options->players[2].user_index, options->players[2].player_valid ? "YES" : "NO");
+		c_console::write_line("machine = %d %d %d %d",
+			options->players[2].machine_identifier.parts[0],
+			options->players[2].machine_identifier.parts[1],
+			options->players[2].machine_identifier.parts[2],
+			options->players[2].machine_identifier.parts[3]
+		);
+
 		players_set_machines(options->machine_options.valid_machine_mask, options->machine_options.machines);
 		players_set_local_machine(options->machine_options.local_machine_exists ? &options->machine_options.local_machine : NULL);
 		for (long i = 0; i < 16; i++)
@@ -704,17 +739,42 @@ bool __cdecl game_options_verify(game_options const* options, char* error_string
 
 	c_console::write_line("machines %s %d", options->machine_options.local_machine_exists ? "EXISTS" : "DOES NOT EXIST", options->machine_options.valid_machine_mask);
 
-	//c_console::write_line("machine 1 = %I64u", options->machine_options.machines[0]);
-	//c_console::write_line("machine 2 = %I64u", options->machine_options.machines[1]);
-	//c_console::write_line("machine 3 = %I64u", options->machine_options.machines[2]);
+	c_console::write_line("local_machine = %d %d %d %d",
+		options->machine_options.local_machine.parts[0],
+		options->machine_options.local_machine.parts[1],
+		options->machine_options.local_machine.parts[2],
+		options->machine_options.local_machine.parts[3]
+	);
+
+	c_console::write_line("machine 1 = %d %d %d %d", options->machine_options.machines[0].parts[0], options->machine_options.machines[0].parts[1], options->machine_options.machines[0].parts[2], options->machine_options.machines[0].parts[3]);
+	c_console::write_line("machine 2 = %d %d %d %d", options->machine_options.machines[1].parts[0], options->machine_options.machines[1].parts[1], options->machine_options.machines[1].parts[2], options->machine_options.machines[1].parts[3]);
+	c_console::write_line("machine 3 = %d %d %d %d", options->machine_options.machines[2].parts[0], options->machine_options.machines[2].parts[1], options->machine_options.machines[2].parts[2], options->machine_options.machines[2].parts[3]);
 
 
 	const char* valid = "VALID";
 	const char* invalid = "INVALID";
 
 	c_console::write_line("player 1 = %hd / %s", options->players[0].user_index, options->players[0].player_valid ? valid : invalid);
+	c_console::write_line("machine = %d %d %d %d",
+		options->players[0].machine_identifier.parts[0],
+		options->players[0].machine_identifier.parts[1],
+		options->players[0].machine_identifier.parts[2],
+		options->players[0].machine_identifier.parts[3]
+	);
 	c_console::write_line("player 2 = %hd / %s", options->players[1].user_index, options->players[1].player_valid ? valid : invalid);
+	c_console::write_line("machine = %d %d %d %d",
+		options->players[1].machine_identifier.parts[0],
+		options->players[1].machine_identifier.parts[1],
+		options->players[1].machine_identifier.parts[2],
+		options->players[1].machine_identifier.parts[3]
+	);
 	c_console::write_line("player 3 = %hd / %s", options->players[2].user_index, options->players[2].player_valid ? valid : invalid);
+	c_console::write_line("machine = %d %d %d %d",
+		options->players[2].machine_identifier.parts[0],
+		options->players[2].machine_identifier.parts[1],
+		options->players[2].machine_identifier.parts[2],
+		options->players[2].machine_identifier.parts[3]
+	);
 
 	bool result;
 	HOOK_INVOKE(result =, game_options_verify, options, error_string, error_string_length);

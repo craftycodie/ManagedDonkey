@@ -61,7 +61,14 @@ void __cdecl initialize_fake_hopper(
 	configuration_table->hopper_configurations[0].veto_enabled = true;
 	configuration_table->hopper_configurations[0].rematch_group_formation = 1;
 	configuration_table->hopper_configurations[0].rematch_countdown_timer = 10;
-	configuration_table->hopper_configurations[0].stats_write = false;
+	configuration_table->hopper_configurations[0].stats_write = true;
+
+	//configuration_table->hopper_configurations[0].unranked_teams.team_count = 2;
+	//configuration_table->hopper_configurations[0].unranked_teams.maximum_team_size = 1;
+	//configuration_table->hopper_configurations[0].unranked_teams.minimum_team_size = 1;
+	//configuration_table->hopper_configurations[0].unranked_teams.maximum_team_size = 1;
+
+
 }
 
 //.text:00544AC0 ; void __cdecl initialize_fake_hopper(s_hopper_configuration_table*, s_game_hopper_description_table*, s_game_set*, s_game_set*);
@@ -115,10 +122,13 @@ HOOK_DECLARE(0x00548220, multiplayer_game_hopper_game_variant_load_status);
 //.text:00548240 ; c_game_variant const* __cdecl multiplayer_game_hopper_get_current_game_variant();
 c_game_variant const* __cdecl multiplayer_game_hopper_get_current_game_variant() {
 
-	build_default_game_variant(&game_variant, e_game_engine_type::_game_engine_type_oddball);
-	game_variant.get_oddball_variant_writeable()->set_name("Test Oddball");
-	game_variant.get_oddball_variant_writeable()->set_score_to_win(25);
-	game_variant.get_oddball_variant_writeable()->get_miscellaneous_options_writeable()->set_round_limit(1);
+	game_engine_tag_defined_variant_get_built_in_variant(e_game_engine_type::_game_engine_type_slayer, 4, &game_variant);
+	//c_game_engine_slayer_variant* writable = game_variant.get_slayer_variant_writeable();
+	//return global_preferences_get()->preferences0.data.last_game_setup.get_multiplayer()->game_variant_settings.get_variant();
+
+	//writable->set_name("Duel");
+	//writable->set_score_to_win(10);
+	//writable->get_leader_traits_writeable()->get_appearance_traits_writeable()->set_waypoint_setting(_waypoint_setting_all, false);
 
 	return &game_variant;
 }
@@ -133,6 +143,10 @@ c_map_variant const* __cdecl multiplayer_game_hopper_get_current_map_variant() {
 	map_variant.create_default(320);
 
 	return &map_variant;
+
+	//auto here = global_preferences_get()->preferences0.data.last_game_setup.get_multiplayer()->map_variant_settings.get_variant();
+
+	//return global_preferences_get()->preferences0.data.last_game_setup.get_multiplayer()->map_variant_settings.get_variant();
 }
 HOOK_DECLARE(0x00548260, multiplayer_game_hopper_get_current_map_variant);
 //.text:00548270 ; utf8 const* __cdecl multiplayer_game_hopper_get_description(word);
@@ -395,11 +409,13 @@ DATA_PATCH_DECLARE(0x004A5A8B, hacky_manifest_load_skip, fuck);
 const byte fuck2[] = { 0xE9, 0x82, 0x00, 0x00, 0x00, 0x90 };
 DATA_PATCH_DECLARE(0x00464AA0, downloader_manifest_skip_1, fuck2);
 
+// this return is broken.
 const byte composition_return_bytes[] = { 0x12 };
-DATA_PATCH_DECLARE(0x4D2921, composition_return, composition_return_bytes);
+DATA_PATCH_DECLARE(0x4D2921, composition_return, composition_return_bytes); // we need this
 
+// solo queue matchmaking hack?
 const byte players_established_patch_bytes[] = {0xB0, 0x01};
-DATA_PATCH_DECLARE(0x0045A406, players_established_return, players_established_patch_bytes);
+DATA_PATCH_DECLARE(0x0045A406, players_established_return, players_established_patch_bytes); // not sure we need this
 
 const byte session_has_minimum_player_count_to_start_game_in_hopper_bytes[] = { 0xB0, 0x01 };
 //DATA_PATCH_DECLARE(0x0048DF19, session_has_minimum_player_count_to_start_game_in_hopper, session_has_minimum_player_count_to_start_game_in_hopper_bytes);

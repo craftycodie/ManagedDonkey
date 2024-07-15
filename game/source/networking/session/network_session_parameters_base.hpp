@@ -61,6 +61,7 @@ public:
 	char const* get_change_request_denied_reason() const;
 	char const* get_set_denied_reason() const;
 	bool set_allowed() const;
+	bool peer_requires_update(long peer_index) const;
 };
 static_assert(sizeof(c_network_session_parameter_base) == 0x30);
 

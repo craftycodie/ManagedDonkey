@@ -2196,6 +2196,23 @@ callback_result_t mm_debug_callback(void const* userdata, long token_count, toke
 	const char* id;
 	s_network_session_player* player;
 
+	TLS_DATA_GET_VALUE_REFERENCE(player_data);
+
+	c_data_iterator<player_datum> player_iterator;
+
+
+	player_iterator.begin(*player_data);
+	while (player_iterator.next())
+	{
+		player_datum* player = player_iterator.get_datum();
+		c_console::write_line("player %ls / %ls team_index %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), player->configuration.host.team_index);
+		c_console::write_line("player_identifier = %I64u, machine = %hd, identifier = %hd, machine_user_index = %hd, flags = %d, unit_index = %d", *(qword*)&player->player_identifier, player->machine_index, player->identifier, player->machine_user_index, player->flags, player->unit_index);
+
+
+		//if (player->flags == 8)
+		//	player->flags = 9;
+	}
+
 
 	c_console::write_line("Managed sessions lets gooooooooooooooo");
 	c_console::write_line("Active Squad Session");
@@ -2258,8 +2275,6 @@ callback_result_t mm_debug_callback(void const* userdata, long token_count, toke
 	transport_secure_address_get(&my_address);
 	transport_secure_address_get_machine_id(&my_address, &machine_id);
 	c_console::write_line("Local address & machine %s %I64u", transport_secure_address_to_string(&my_address, address, 255, false, false), machine_id);
-
-	TLS_DATA_GET_VALUE_REFERENCE(player_data);
 
 	return result;
 }

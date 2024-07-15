@@ -144,3 +144,5 @@ extern char const* __cdecl managed_session_get_id_string(long managed_session_in
 extern void __cdecl online_session_manager_dispose();
 extern void __cdecl online_session_manager_initialize();
 extern void __cdecl online_session_manager_update();
+extern void __cdecl managed_session_game_start(int session_index);
+extern void __cdecl managed_session_game_start_complete(int session_index, bool success, int);

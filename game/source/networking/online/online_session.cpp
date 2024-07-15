@@ -174,6 +174,7 @@ void __thiscall c_managed_session_overlapped_task::process_game_end(long managed
 //.text:00442C50 ; void __cdecl c_managed_session_overlapped_task::process_game_start(long, void(__cdecl*)(long, bool, dword), s_online_session*);
 void __thiscall c_managed_session_overlapped_task::process_game_start(long managed_session_index, void(__cdecl* callback)(long, bool, dword), s_online_session* session)
 {
+	c_console::write_line("donkey:matchmaking c_managed_session_overlapped_task::process_game_start");
 	m_managed_session_index = managed_session_index;
 	m_callback = callback;
 	m_session = session;
@@ -419,7 +420,7 @@ dword __thiscall c_managed_session_overlapped_task::start_(void* pXOverlapped)
 		c_console::write_line("managed-session-context: %s", get_context_string());
 
 		ASSERT(m_session);
-		ASSERT(VALID_HANDLE(m_session->handle));
+		//ASSERT(VALID_HANDLE(m_session->handle));
 
 		//result = XSessionStart(m_session->handle, (PXOVERLAPPED)overlapped);
 

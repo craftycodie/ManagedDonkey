@@ -1,6 +1,11 @@
+#include "memory/module.hpp"
 #include "networking/session/network_session_membership.hpp"
-
 #include "networking/messages/network_messages_session_membership.hpp"
+#include "networking/session/network_session.hpp"
+#include "networking/logic/network_life_cycle.hpp"
+
+HOOK_DECLARE_CLASS_MEMBER(0x0044D130, c_network_session_membership, all_peers_have_connectivity_information);
+
 
 long c_network_session_membership::get_player_index_from_peer(long peer_index)
 {
@@ -123,3 +128,119 @@ void c_network_session_membership::set_player_properties(long player_index, long
 		increment_update();
 }
 
+const s_network_session_peer* c_network_session_membership::get_peer(long peer_index) const {
+	return &(this->m_shared_network_membership.peers[peer_index]);
+}
+
+bool c_network_session_membership::peer_property_flag_test(int test_type, int flag) const {
+	int peer_index;
+	bool is_valid_peer_type;
+
+	for (peer_index = 0; peer_index < 16; ++peer_index)
+	{
+		if (this->is_peer_valid(peer_index))
+		{
+			const s_network_session_peer* peer = this->get_peer(peer_index);
+			is_valid_peer_type = 1;
+			if (test_type)
+			{
+				if (test_type == 1)
+				{
+					if (this->host_peer_index() != peer_index)
+						is_valid_peer_type = 0;
+				}
+				else if (test_type < 3)
+				{
+					if (this->host_peer_index() == peer_index)
+						is_valid_peer_type = 0;
+				}
+				else {
+					ASSERT2("unreachable");
+				}
+			}
+			else
+			{
+				is_valid_peer_type = 1;
+			}
+			if (is_valid_peer_type && !((1 << flag) & peer->properties.flags))
+			{
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+//
+bool c_network_session_membership::all_peers_have_connectivity_information()
+{
+	c_console::write_line("donkey:matchmaking c_network_session_membership::all_peers_have_connectivity_information");
+
+	//if (m_session->is_host()) {
+		//c_console::write_line("donkey:matchmaking:arbitration we're hosting, setup initial participants!");
+
+		//// This shouldn't be here, but doesn't have a home yet.
+		//life_cycle_globals.handler_matchmaking_arbitration.setup_initial_participants(this->m_session);
+		//life_cycle_globals.handler_matchmaking_arbitration.m_flags |= 0x80;
+
+	//}
+
+
+	for (auto peer : this->m_shared_network_membership.peers) {
+		peer.properties.connectivity.peer_connectivity_mask = 3;
+		peer.properties.estimated_upstream_bandwidth_bps = 20 * 1024;
+		peer.properties.connectivity.peer_probe_mask = 3;
+	}
+	this->m_shared_network_membership.peer_valid_mask.set(0, true);
+	this->m_shared_network_membership.peer_valid_mask.set(1, true);
+
+	bool result;
+	HOOK_INVOKE_CLASS_MEMBER(result =, c_network_session_membership, all_peers_have_connectivity_information);
+
+	c_console::write_line("donkey:matchmaking all_peers_have_connectivity_information = %s", result ? "YES" : "NO");
+
+	return result;
+
+	//return 1;
+
+	/////
+
+//	int peer_index; // edi
+//	int first_peer_index; // esi
+//	dword v3; // edx
+//	int v4; // eax
+//	int v5; // esi
+//
+//	peer_index = -1;
+//	first_peer_index = 0;
+//	while (!this->m_shared_network_membership.peer_valid_mask.test(first_peer_index))
+//	{
+//		if (++first_peer_index >= 17)
+//			goto LABEL_6;
+//	}
+//	peer_index = first_peer_index;
+//LABEL_6:
+//	if (peer_index == -1)
+//		return 1;
+//	v3 = this->m_shared_network_membership.peer_valid_flags[0];
+//	while ((~this->m_shared_network_membership.peers[peer_index].properties.connectivity.peer_probe_mask & v3) == 0
+//		&& this->m_shared_network_membership.peers[peer_index].properties.estimated_upstream_bandwidth_bps)
+//	{
+//		v4 = peer_index + 1;
+//		v5 = -1;
+//		if (peer_index + 1 < 17)
+//		{
+//			while (((1 << (v4 & 0x1F)) & this->m_shared_network_membership.peer_valid_flags[v4 >> 5]) == 0)
+//			{
+//				if (++v4 >= 17)
+//					goto LABEL_15;
+//			}
+//			v5 = v4;
+//		LABEL_15:
+//			v3 = this->m_shared_network_membership.peer_valid_flags[0];
+//		}
+//		peer_index = v5;
+//		if (v5 == -1)
+//			return 1;
+//	}
+//	return 0;
+}
