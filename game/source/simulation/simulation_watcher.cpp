@@ -3,6 +3,7 @@
 #include "main/loading.hpp"
 #include "networking/logic/network_session_interface.hpp"
 #include "simulation/simulation_world.hpp"
+#include "memory/module.hpp"
 
 void c_simulation_watcher::describe_status(char* buffer, long buffer_size) const
 {
@@ -170,3 +171,10 @@ bool c_simulation_watcher::need_to_generate_updates() const
 	return DECLFUNC(0x0046D090, bool, __thiscall, c_simulation_watcher const*)(this);
 }
 
+HOOK_DECLARE_CLASS_MEMBER(0x0046CD70, c_simulation_watcher, in_online_networked_session);
+bool __thiscall c_simulation_watcher::in_online_networked_session() {
+	return false;
+
+	return this->m_session->session_class() == _network_session_class_xbox_live
+		&& this->m_session->get_session_membership_unsafe()->m_shared_network_membership.peer_count > 1;
+}

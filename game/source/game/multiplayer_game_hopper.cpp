@@ -61,14 +61,7 @@ void __cdecl initialize_fake_hopper(
 	configuration_table->hopper_configurations[0].veto_enabled = true;
 	configuration_table->hopper_configurations[0].rematch_group_formation = 1;
 	configuration_table->hopper_configurations[0].rematch_countdown_timer = 10;
-	configuration_table->hopper_configurations[0].stats_write = true;
-
-	//configuration_table->hopper_configurations[0].unranked_teams.team_count = 2;
-	//configuration_table->hopper_configurations[0].unranked_teams.maximum_team_size = 1;
-	//configuration_table->hopper_configurations[0].unranked_teams.minimum_team_size = 1;
-	//configuration_table->hopper_configurations[0].unranked_teams.maximum_team_size = 1;
-
-
+	configuration_table->hopper_configurations[0].stats_write = false;
 }
 
 //.text:00544AC0 ; void __cdecl initialize_fake_hopper(s_hopper_configuration_table*, s_game_hopper_description_table*, s_game_set*, s_game_set*);

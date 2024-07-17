@@ -185,13 +185,17 @@ bool c_network_session_membership::all_peers_have_connectivity_information()
 	//}
 
 
+
+	return true;
+
+
 	for (auto peer : this->m_shared_network_membership.peers) {
-		peer.properties.connectivity.peer_connectivity_mask = 3;
+		peer.properties.connectivity.peer_connectivity_mask = 1;
 		peer.properties.estimated_upstream_bandwidth_bps = 20 * 1024;
-		peer.properties.connectivity.peer_probe_mask = 3;
+		peer.properties.connectivity.peer_probe_mask = 1;
 	}
 	this->m_shared_network_membership.peer_valid_mask.set(0, true);
-	this->m_shared_network_membership.peer_valid_mask.set(1, true);
+
 
 	bool result;
 	HOOK_INVOKE_CLASS_MEMBER(result =, c_network_session_membership, all_peers_have_connectivity_information);

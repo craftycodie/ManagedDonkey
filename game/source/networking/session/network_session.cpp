@@ -11,31 +11,31 @@
 #include "networking/session/network_observer.hpp"
 #include <interface/user_interface_controller.hpp>
 
-void __cdecl network_session_calculate_peer_connectivity(c_network_session* a1, s_network_session_peer_connectivity* a2) {
-	// wait, that's illegal
-	session_interface_globals.has_live_connection_info = true;
-	session_interface_globals.qos_result.bandwidth_downstream_bps = 20 * 1024;
-	session_interface_globals.qos_result.bandwidth_upstream_bps = 20 * 1024;
-	session_interface_globals.bandwidth_bps = 20 * 1024;
-
-
-	a2->peer_connectivity_mask = 3;
-	//a2->peer_latency_est = 20;
-	//a2->peer_latency_max = 100;
-	//a2->peer_latency_min = 10;
-	a2->peer_probe_mask = 3;
-}
-HOOK_DECLARE(0x4356A0, network_session_calculate_peer_connectivity);
-
-int sub_4464B0(void*) {
-	return 20 * 1024;
-}
-HOOK_DECLARE(0x4464B0, sub_4464B0);
-
-bool sub_4464D0(void*) {
-	return 1;
-}
-HOOK_DECLARE(0x4464D0, sub_4464D0);
+//void __cdecl network_session_calculate_peer_connectivity(c_network_session* a1, s_network_session_peer_connectivity* a2) {
+//	// wait, that's illegal
+//	session_interface_globals.has_live_connection_info = true;
+//	session_interface_globals.qos_result.bandwidth_downstream_bps = 20 * 1024;
+//	session_interface_globals.qos_result.bandwidth_upstream_bps = 20 * 1024;
+//	session_interface_globals.bandwidth_bps = 200 * 1024;
+//
+//
+//	a2->peer_connectivity_mask = 1;
+//	//a2->peer_latency_est = 20;
+//	//a2->peer_latency_max = 100;
+//	//a2->peer_latency_min = 10;
+//	a2->peer_probe_mask = 1;
+//}
+//HOOK_DECLARE(0x4356A0, network_session_calculate_peer_connectivity);
+//
+//int sub_4464B0(void*) {
+//	return 20 * 1024;
+//}
+//HOOK_DECLARE(0x4464B0, sub_4464B0);
+//
+//bool sub_4464D0(void*) {
+//	return 1;
+//}
+//HOOK_DECLARE(0x4464D0, sub_4464D0);
 
 bool __fastcall network_session_peer_request_player_desired_properties_update(c_network_session* _this, void* usused, long player_update_number, e_controller_index controller_index, s_player_configuration_from_client const* player_data_from_client, dword player_voice)
 {
