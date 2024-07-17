@@ -14,8 +14,8 @@ struct c_simulation_watcher :
 public:
 	void describe_status(char* buffer, long buffer_size) const;
 	bool need_to_generate_updates() const;
+	bool __thiscall in_online_networked_session();
 
-protected:
 	c_simulation_world* m_world;
 	c_network_observer* m_observer;
 	c_network_session* m_session;

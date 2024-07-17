@@ -96,6 +96,8 @@ void __thiscall c_gui_roster_list_widget::update(dword a1)
 				&& rank_tray_hilite_bitmap_widget
 				&& service_tag_text_widget
 				&& roster_data->get_text_value(element_handle, STRING_ID(gui, service_tag), &service_tag)
+				&& roster_data->get_text_value(element_handle, STRING_ID(gui, player_found), &player_found)
+				&& roster_data->get_text_value(element_handle, STRING_ID(gui, looking_for_player), &looking_for_player)
 				&& roster_data->get_integer_value(element_handle, STRING_ID(gui, player_index), &session_player_index)
 				&& roster_data->get_integer_value(element_handle, STRING_ID(gui, player_row_type), &player_row_type)
 				&& roster_data->get_integer_value(element_handle, STRING_ID(gui, controller_index), &controller_index)
@@ -272,6 +274,8 @@ void __thiscall c_gui_roster_list_widget::update(dword a1)
 				name_text_widget->get_text_internal()->set_font(1);
 				name_hilite_text_widget->get_text_internal()->set_font(1);
 				service_tag_text_widget->get_text_internal()->set_font(1);
+				looking_for_player_text_widget->get_text_internal()->set_font(1);
+				player_found_text_widget->get_text_internal()->set_font(1);
 
 				if (!team_change_active)
 					roster_data->get_text_value(element_handle, STRING_ID(global, player_name), &name);

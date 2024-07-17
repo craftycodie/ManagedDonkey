@@ -62,6 +62,12 @@ bool __cdecl c_session_tracker::add_session(char const* name, s_transport_sessio
 
 		tracked_session->flags.set(_session_tracker_session_valid_bit, true);
 		m_session_count++;
+
+		// Matchmaking hack: We don't have a valid QoS payload from transport_qos_get_result,
+		// but we can just set these to tru to skip the requirement for now.
+		// MM TODO: Reimplement QoS payloads via API.
+		tracked_session->qos_received[0] = true;
+		tracked_session->qos_received[1] = true;
 	}
 	else
 	{
@@ -499,4 +505,3 @@ bool __cdecl c_session_tracker::update_sort_by_desirability()
 {
 	return DECLFUNC(0x004E3810, bool, __thiscall, c_session_tracker*)(this);
 }
-

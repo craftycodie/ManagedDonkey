@@ -29,6 +29,7 @@
 HOOK_DECLARE(0x00533120, game_tick);
 HOOK_DECLARE(0x006961B0, game_launch_has_initial_script);
 
+
 bool g_debug_survival_mode = false;
 
 char const* const k_game_simulation_names[k_game_simulation_count]
@@ -148,23 +149,6 @@ void __cdecl game_create_objects(e_game_create_mode mode)
 void __cdecl game_create_players()
 {
 	INVOKE(0x00530B90, game_create_players);
-
-	//if (!main_game_reset_in_progress())
-	//{
-	//	game_options* options = game_options_get();
-	//	ASSERT(!simulation_reset_in_progress());
-	//
-	//	players_set_machines(options->machine_options.valid_machine_mask, options->machine_options.machines);
-	//	players_set_local_machine(options->machine_options.local_machine_exists ? &options->machine_options.local_machine : NULL);
-	//	for (long i = 0; i < 16; i++)
-	//	{
-	//		if (options->players[i].player_valid)
-	//			player_new(i, &options->players[i], false);
-	//	}
-	//
-	//	players_finish_creation();
-	//	simulation_notify_players_created();
-	//}
 }
 
 void __cdecl game_create_unlock_resources(e_game_create_mode mode, long& lock)
@@ -688,7 +672,6 @@ void __cdecl game_options_validate(game_options* options)
 }
 
 //.text:005326B0 ; void __cdecl game_options_validate_for_saved_game(long)
-
 bool __cdecl game_options_verify(game_options const* options, char* error_string, long error_string_length)
 {
 	return INVOKE(0x005326F0, game_options_verify, options, error_string, error_string_length);

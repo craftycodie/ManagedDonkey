@@ -107,9 +107,11 @@ bool __cdecl c_network_message_type_collection::decode_message(c_bitstream* pack
 			return true;
 
 		ASSERT(type_definition->decode_function);
-		return type_definition->decode_function(packet, *message_storage_size, message_storage);
+		type_definition->decode_function(packet, *message_storage_size, message_storage);
+		return true;
 	}
 
+	c_console::write_line("donkey-matchmaking: Failed to decode header for packet.");
 	return false;
 }
 

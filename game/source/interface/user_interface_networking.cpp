@@ -10,6 +10,7 @@
 #include "networking/logic/network_session_interface.hpp"
 #include "networking/network_globals.hpp"
 #include "shell/shell.hpp"
+#include "memory/module.hpp"
 
 REFERENCE_DECLARE(0x05253D88, s_user_interface_networking_globals, user_interface_networking_globals);
 
@@ -115,7 +116,10 @@ bool __cdecl sub_A7EF60()
 long __cdecl user_interface_networking_get_current_location()
 {
 	return INVOKE(0x00A7EF70, user_interface_networking_get_current_location);
+
+	//return 5;
 }
+//HOOK_DECLARE(0x00A7EF70, user_interface_networking_get_current_location);
 
 long __cdecl user_interface_networking_get_current_party_size()
 {

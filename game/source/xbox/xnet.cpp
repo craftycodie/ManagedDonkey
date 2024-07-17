@@ -73,9 +73,20 @@ bool __cdecl XNetXnAddrToInAddr(s_transport_secure_address const* secure_address
 {
 	//return INVOKE(0x0052D840, XNetXnAddrToInAddr, secure_address, secure_identifier, out_address);
 
-	long entry_index = XNetFindEntry(nullptr, secure_address, true);
-	if (entry_index == -1)
+	long entry_index = XNetFindEntry(nullptr, secure_address, false);
+	if (entry_index == -1) {
+		char address[255];
+		transport_secure_address_to_string(secure_address, (char*)&address, sizeof(address), false, false);
+		c_console::write_line("donkey:matchmaking: Failed to find mapped address for secure_address %s", (const char*)address);
+		transport_secure_address_to_string(&xnet_mapping[0].secure_address, (char*)&address, sizeof(address), false, false);
+		c_console::write_line("donkey:matchmaking: mapped address 1 %s", (const char*)address);
+		transport_secure_address_to_string(&xnet_mapping[1].secure_address, (char*)&address, sizeof(address), false, false);
+		c_console::write_line("donkey:matchmaking: mapped address 2 %s", (const char*)address);
+		transport_secure_address_to_string(&xnet_mapping[2].secure_address, (char*)&address, sizeof(address), false, false);
+		c_console::write_line("donkey:matchmaking: mapped address 3 %s", (const char*)address);
+
 		return false;
+	}
 
 	s_xnet_entry& entry = xnet_mapping[entry_index];
 	*out_address = entry.address;
@@ -88,9 +99,19 @@ bool __cdecl _XNetInAddrToXnAddr(transport_address const* address, s_transport_s
 {
 	//return INVOKE(0x0052D8F0, XNetInAddrToXnAddr, address, out_secure_address);
 
-	long entry_index = XNetFindEntry(address, nullptr, true);
-	if (entry_index == -1)
+	long entry_index = XNetFindEntry(address, nullptr, false);
+	if (entry_index == -1) {
+		const char* address_string = transport_address_get_string(address);
+		c_console::write_line("donkey:matchmaking: XNetInAddrToXnAddr Failed to find mapped address for address %s", (const char*)address);
+		address_string = transport_address_get_string(address);
+		c_console::write_line("donkey:matchmaking: XNetInAddrToXnAddr mapped address 1 %s", (const char*)address);
+		address_string = transport_address_get_string(address);
+		c_console::write_line("donkey:matchmaking: XNetInAddrToXnAddr mapped address 2 %s", (const char*)address);
+		address_string = transport_address_get_string(address);
+		c_console::write_line("donkey:matchmaking: XNetInAddrToXnAddr mapped address 3 %s", (const char*)address);
+
 		return false;
+	}
 
 	s_xnet_entry& entry = xnet_mapping[entry_index];
 	*out_secure_address = entry.secure_address;
@@ -103,9 +124,19 @@ bool __cdecl XNetInAddrToXnAddr(transport_address const* address, s_transport_se
 {
 	//return INVOKE(0x0052D970, XNetInAddrToXnAddr, address, out_secure_address, out_secure_identifier);
 
-	long entry_index = XNetFindEntry(address, nullptr, true);
-	if (entry_index == -1)
+	long entry_index = XNetFindEntry(address, nullptr, false);
+	if (entry_index == -1) {
+		const char* address_string = transport_address_get_string(address);
+		c_console::write_line("donkey:matchmaking: XNetInAddrToXnAddr Failed to find mapped address for address %s", (const char*)address);
+		address_string = transport_address_get_string(address);
+		c_console::write_line("donkey:matchmaking: XNetInAddrToXnAddr mapped address 1 %s", (const char*)address);
+		address_string = transport_address_get_string(address);
+		c_console::write_line("donkey:matchmaking: XNetInAddrToXnAddr mapped address 2 %s", (const char*)address);
+		address_string = transport_address_get_string(address);
+		c_console::write_line("donkey:matchmaking: XNetInAddrToXnAddr mapped address 3 %s", (const char*)address);
+
 		return false;
+	}
 
 	s_xnet_entry& entry = xnet_mapping[entry_index];
 	*out_secure_address = entry.secure_address;
@@ -120,11 +151,12 @@ void __cdecl XNetRemoveEntry(transport_address const* address)
 {
 	//INVOKE(0x0052DA40, XNetRemoveEntry, address);
 
-	long entry_index = XNetFindEntry(address, nullptr, true);
+	long entry_index = XNetFindEntry(address, nullptr, false);
 	if (entry_index == -1)
 		return;
 
 	s_xnet_entry& entry = xnet_mapping[entry_index];
+	// THIS IS BAD, PUT THIS BACK IDIOT
 	entry.initialized = false;
 }
 

@@ -180,6 +180,9 @@ bool __cdecl transport_address_valid(transport_address const* address)
 		}
 	}
 
+	//if (!result)
+	//	generate_event(_event_level_warning, "donkey:matchmaking: the IP address is NOT valid");
+
 	return result;
 }
 

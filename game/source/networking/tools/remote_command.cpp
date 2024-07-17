@@ -1,5 +1,4 @@
 #include "networking/tools/remote_command.hpp"
-
 #include "ai/ai.hpp"
 #include "cache/cache_files.hpp"
 #include "camera/observer.hpp"
@@ -46,6 +45,7 @@
 #include "test/test_functions.hpp"
 #include "units/bipeds.hpp"
 #include "xbox/xnet.hpp"
+#include "cseries/async_xoverlapped.hpp"
 
 s_remote_command_globals remote_command_globals;
 
@@ -1951,3 +1951,220 @@ callback_result_t levels_add_map_multi_callback(void const* userdata, long token
 	return result;
 }
 
+void parse_session_string(const char* input, char* id, char* address, char* ipAddress, char* port) {
+	// Pointers to keep track of the start and end of each segment
+	const char* start = input;
+	const char* end = input;
+
+	// Find the first delimiter ':'
+	while (*end != ':' && *end != '\0') {
+		end++;
+	}
+	memcpy(id, start, end - start);
+	id[end - start] = '\0'; // Null-terminate the string
+
+	// Move to the next segment
+	start = ++end;
+
+	// Find the second delimiter ':'
+	while (*end != ':' && *end != '\0') {
+		end++;
+	}
+	memcpy(address, start, end - start);
+	address[end - start] = '\0'; // Null-terminate the string
+
+	// Move to the next segment
+	start = ++end;
+
+	// Find the third delimiter ':'
+	while (*end != ':' && *end != '\0') {
+		end++;
+	}
+	memcpy(ipAddress, start, end - start);
+	ipAddress[end - start] = '\0'; // Null-terminate the string
+
+	// Move to the next segment
+	start = ++end;
+
+	// The remaining part is the port
+	while (*end != '\0') {
+		end++;
+	}
+	memcpy(port, start, end - start);
+	port[end - start] = '\0'; // Null-terminate the string
+}
+
+// Function to convert a single hex character to its integer value
+unsigned char hex_char_to_nibble(char c) {
+	if (c >= '0' && c <= '9') {
+		return c - '0';
+	}
+	else if (c >= 'a' && c <= 'f') {
+		return c - 'a' + 10;
+	}
+	else if (c >= 'A' && c <= 'F') {
+		return c - 'A' + 10;
+	}
+	return 0;
+}
+
+// Function to convert two hex characters to a byte
+unsigned char hex_to_byte(char high, char low) {
+	return (hex_char_to_nibble(high) << 4) | hex_char_to_nibble(low);
+}
+
+// Function to convert the ID string to an s_transport_secure_identifier
+void string_to_transport_secure_identifier(const char* idStr, s_transport_secure_identifier* identifier) {
+	int index = 0;
+	int byteIndex = 0;
+	unsigned char buffer[16];
+
+	// Convert the input string into a buffer of bytes
+	while (idStr[index] != '\0' && byteIndex < 16) {
+		if (idStr[index] != '-') {
+			if (idStr[index + 1] != '\0' && idStr[index + 1] != '-') {
+				buffer[byteIndex] = hex_to_byte(idStr[index], idStr[index + 1]);
+				index++;
+				byteIndex++;
+			}
+		}
+		index++;
+	}
+
+	// Assign buffer to the appropriate parts of the struct
+	identifier->part0 = (buffer[0] << 24) | (buffer[1] << 16) | (buffer[2] << 8) | buffer[3];
+	identifier->part4[0] = (buffer[4] << 8) | buffer[5];
+	identifier->part4[1] = (buffer[6] << 8) | buffer[7];
+	for (int i = 0; i < 8; ++i) {
+		identifier->part8[i] = buffer[8 + i];
+	}
+}
+
+dword parse_ip_string(const char* ipStr) {
+	dword ipInt = 0;
+	int partValue = 0; // Value of the current part
+	int shiftBits = 24; // Start with the most significant byte
+
+	// Loop through each character in the IP string
+	while (*ipStr) {
+		char c = *ipStr;
+		if (c == '.') {
+			// Convert partValue to integer and shift it to the correct position
+			ipInt |= (partValue << shiftBits);
+
+			// Move to the next octet
+			shiftBits -= 8;
+			partValue = 0; // Reset partValue for the next octet
+		}
+		else if (c >= '0' && c <= '9') {
+			partValue = partValue * 10 + (c - '0');
+		}
+		else {
+			// Handle invalid characters in the IP address string
+			return 0;
+		}
+		++ipStr; // Move to the next character
+	}
+
+	// Convert the last partValue to integer and shift it to the correct position
+	ipInt |= (partValue << shiftBits);
+
+	return ipInt;
+}
+
+word parse_port(const char* portStr) {
+	word port = 0;
+
+	// Loop through each character in the port string
+	while (*portStr) {
+		char c = *portStr;
+		if (c >= '0' && c <= '9') {
+			port = port * 10 + (c - '0');
+		}
+		else {
+			// Handle invalid characters in the port string
+			return 0;
+		}
+		++portStr; // Move to the next character
+	}
+
+	return port;
+}
+
+
+callback_result_t mm_print_session_callback(void const* userdata, long token_count, tokens_t const tokens)
+{
+	COMMAND_CALLBACK_PARAMETER_CHECK;
+
+	// id:address:ip:port
+
+	if (life_cycle_globals.manager.m_group_session->m_managed_session_index == -1) {
+		result.print_line("start searching first.");
+		return result;
+	}
+
+	s_transport_session_description& session_description = online_session_manager_globals.managed_sessions[life_cycle_globals.manager.m_group_session->m_managed_session_index].desired_online_session_state.description;
+	transport_address external_address;
+
+	const char* id = managed_session_get_id_string(life_cycle_globals.manager.m_group_session->m_managed_session_index);
+	char address[255];
+	char ip[24];
+	char port[] = "11774";
+
+	transport_secure_address_to_string(&session_description.address, (char*)&address, sizeof(address), false, false);
+
+	transport_address_ipv4_build(&external_address, get_external_ip(), 11774);
+	csnzprintf(ip, sizeof(ip), "%hd.%hd.%hd.%hd",
+		external_address.ina.bytes[3],
+		external_address.ina.bytes[2],
+		external_address.ina.bytes[1],
+		external_address.ina.bytes[0]);
+
+	result.append_print_line("mm_find_session %s:%s:%s:%s", id, address, ip, port);
+	return result;
+}
+
+callback_result_t mm_find_session_callback(void const* userdata, long token_count, tokens_t const tokens)
+{
+	COMMAND_CALLBACK_PARAMETER_CHECK;
+
+	// id:address:ip:port
+	// 63cf6597-d9f5-ba61-d38c-cc06480e4a6e:d6a0b0ab-83d9-9251-04f6-71efd6218438:80.7.112.70:11774
+
+	const char* session_string = tokens[1]->get_string();
+
+	char id[37];
+	char address[37];
+	char ip[16];
+	char port[6];
+
+	parse_session_string(session_string, id, address, ip, port);
+
+	s_transport_secure_identifier parsed_id;
+	s_transport_secure_address parsed_address;
+	dword parsed_ip;
+	word parsed_port;
+
+	string_to_transport_secure_identifier(id, &parsed_id);
+	string_to_transport_secure_identifier(address, (s_transport_secure_identifier*)&parsed_address);
+	parsed_ip = parse_ip_string(ip);
+	parsed_port = parse_port(port);
+
+	transport_address transport_addr;
+	transport_addr.ipv4_address = parsed_ip;
+	transport_addr.port = parsed_port;
+	memcpy(&transport_addr.ina, &parsed_ip, sizeof(transport_addr.ina));
+	transport_addr.address_length = sizeof(transport_addr.ina);
+
+	XNetAddEntry(&transport_addr, &parsed_address, &parsed_id);
+
+	static s_transport_session_description description = {
+	.id = parsed_id,
+	.address = parsed_address,
+	.key = {}
+	};
+
+	network_session_tracker_track_session("UNKNOWN", &description);
+
+	return result;
+}

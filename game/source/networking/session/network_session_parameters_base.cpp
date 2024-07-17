@@ -101,6 +101,14 @@ long c_network_session_parameter_base::get_update_size() const
 	return get_update_payload_size();
 }
 
+bool c_network_session_parameter_base::peer_requires_update(long peer_index) const
+{
+	bool result = 0;
+	if ((this->m_state_flags & 1) != 0)
+		return this->m_transmitted_peer_updates[peer_index] == 0;
+	return result;
+}
+
 void c_network_session_parameter_base::set_change_request_no_longer_desired()
 {
 	generate_event(_event_level_status, "networking:session_parameters: [%s] parameter %d [%s] change request no longer desired", get_session_description(), m_type, m_name);

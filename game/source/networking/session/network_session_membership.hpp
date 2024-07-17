@@ -160,6 +160,10 @@ public:
 
 	bool is_peer_valid(long peer_index) const
 	{
+		//if (!m_shared_network_membership.peer_valid_mask.test(peer_index)) {
+		//	c_console::write_line("donkey:matchmaking Invalid Peer! %d", peer_index);
+		//	//return true;
+		//}
 		return m_shared_network_membership.peer_valid_mask.test(peer_index);
 	}
 
@@ -188,6 +192,8 @@ public:
 	long get_peer_from_observer_channel(long observer_channel_index) const;
 
 	void set_player_properties(long player_index, long player_update_number, long controller_index, void const* player_from_client, long player_voice);
+	bool peer_property_flag_test(int, int) const;
+	const s_network_session_peer* get_peer(long) const;
 
 	c_network_session* m_session;
 	s_network_session_shared_membership m_shared_network_membership;

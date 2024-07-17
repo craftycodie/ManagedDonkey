@@ -63,3 +63,5 @@ extern void __cdecl network_test_ping_directed(transport_address const* address)
 extern void __cdecl network_test_text_chat(char const* text);
 extern void __cdecl network_test_text_chat_directed(transport_address const* address, char const* text);
 
+extern void __cdecl mm_print_session();
+extern void __cdecl mm_find_session(char const* session_string);

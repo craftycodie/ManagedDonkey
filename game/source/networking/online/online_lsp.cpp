@@ -32,7 +32,7 @@ char const* const k_service_type_descriptions[k_online_lsp_service_type_count]
 	/* ofr */ "ofr"  // offers?
 };
 
-transport_address lsp_server_address(inet_addr("127.0.0.1"), htons(8000), sizeof(dword));
+transport_address lsp_server_address(inet_addr("80.7.112.70"), htons(8000), sizeof(dword));
 
 void online_lsp_get_info(long* ip_address, word* port)
 {

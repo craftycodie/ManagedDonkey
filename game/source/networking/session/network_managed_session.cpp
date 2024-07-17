@@ -1,10 +1,12 @@
 #include "networking/session/network_managed_session.hpp"
-
 #include "memory/module.hpp"
+
+#include <networking/logic/network_life_cycle.hpp>
+#include "networking/session/network_session.hpp"
 
 REFERENCE_DECLARE(0x02247448, s_online_session_manager_globals, online_session_manager_globals);
 
-//HOOK_DECLARE_CLASS_MEMBER(0x00480420, c_managed_session_overlapped_task, complete_);
+HOOK_DECLARE_CLASS_MEMBER(0x00480420, c_managed_session_overlapped_task, complete_);
 //HOOK_DECLARE_CLASS_MEMBER(0x00480440, c_managed_session_overlapped_task, failure_);
 //HOOK_DECLARE_CLASS_MEMBER(0x00483CB0, c_managed_session_overlapped_task, success_);
 
@@ -55,13 +57,16 @@ void __thiscall c_managed_session_overlapped_task::failure_(dword calling_result
 //.text:00481E10 ; void __cdecl managed_session_game_end(long);
 //.text:00481EB0 ; void __cdecl managed_session_game_end_complete(long, bool, dword);
 //.text:00481F10 ; void __cdecl managed_session_game_start(long);
-//.text:00481F80 ; void __cdecl managed_session_game_start_complete(long, bool, dword);
+
 //.text:00481FE0 ; s_online_managed_session* __cdecl managed_session_get(long);
 //.text:00482000 ; bool __cdecl managed_session_get_handle(long, void**);
+HOOK_DECLARE(0x00482040, managed_session_get_id);
 
 bool __cdecl managed_session_get_id(long index, s_transport_secure_identifier* session_id)
 {
-	return INVOKE(0x00482040, managed_session_get_id, index, session_id);
+	bool result;
+	HOOK_INVOKE(result =, managed_session_get_id, index, session_id);
+	return result;
 }
 
 char const* __cdecl managed_session_get_id_string(long index)
@@ -122,6 +127,21 @@ void __cdecl online_session_manager_update()
 	INVOKE(0x00483B20, online_session_manager_update);
 }
 
+HOOK_DECLARE(0x00481F10, managed_session_game_start);
+void __cdecl managed_session_game_start(int session_index)
+{
+	c_console::write_line("donkey:matchmaking managed_session_game_start for session %d", session_index);
+	HOOK_INVOKE(, managed_session_game_start, session_index);
+}
+
+HOOK_DECLARE(0x00481F80, managed_session_game_start_complete);
+void __cdecl managed_session_game_start_complete(int session_index, bool success, int a3)
+{
+	c_console::write_line("donkey:matchmaking managed_session_game_start_complete for session %d success? %s", session_index, success ? "YES" : "NO");
+	HOOK_INVOKE(, managed_session_game_start_complete, session_index, success, a3);
+}
+
+
 //.text:00483B50 ; void __cdecl remove_from_player_list(s_online_session_player*, long, qword const*, long);
 
 //.text:00483CB0 ; virtual void __cdecl c_managed_session_overlapped_task::success(dword)
@@ -130,4 +150,3 @@ void __thiscall c_managed_session_overlapped_task::success_(dword return_result)
 	m_callback_value1 = return_result;
 	m_callback_value0 = true;
 }
-

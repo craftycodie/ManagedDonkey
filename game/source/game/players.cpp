@@ -9,6 +9,7 @@
 #include "render/render_debug.hpp"
 #include "scenario/scenario.hpp"
 #include "text/draw_string.hpp"
+#include <simulation/simulation.hpp>
 
 HOOK_DECLARE(0x00536020, player_get_armor_loadout);
 HOOK_DECLARE(0x00536680, player_get_weapon_loadout);
@@ -263,10 +264,44 @@ bool __cdecl player_is_reading_terminal()
 //.text:0053B7E0
 //.text:0053B840 ; void __cdecl player_mostly_input_inhibit(long, s_player_action *)
 
+bool __cdecl ai_player_state_create(long player_index)
+{
+	return INVOKE(0x01436520, ai_player_state_create, player_index);
+}
+
+void __cdecl game_engine_player_added(long player_index)
+{
+	INVOKE(0x005A0F70, game_engine_player_added, player_index);
+}
+
 long __cdecl player_new(long player_array_index, game_player_options const* options, bool joined_in_progress)
 {
-	return INVOKE(0x0053B880, player_new, player_array_index, options, joined_in_progress);
+	//return INVOKE(0x0053B880, player_new, player_array_index, options, joined_in_progress);
+
+	TLS_DATA_GET_VALUE_REFERENCE(player_data);
+	TLS_DATA_GET_VALUE_REFERENCE(players_globals);
+
+
+	long result = datum_new_at_absolute_index(*player_data, player_array_index);
+	long player_absolute_index = result;
+
+	c_console::write_line("donkey:matchmaking player_new %d %s", result, options->player_left_game ? "LEFT" : "");
+
+	if (result != NONE)
+	{
+		player_reset(result, true, joined_in_progress, options);
+		if (!options->player_left_game)
+		{
+			players_globals->players_in_game_count;
+			simulation_player_joined_game(player_absolute_index);
+			ai_player_state_create(player_absolute_index);
+			game_engine_player_added(player_absolute_index);
+		}
+		return player_absolute_index;
+	}
+	return result;
 }
+HOOK_DECLARE(0x0053B880, player_new);
 
 //.text:0053B8F0 ; void __cdecl player_notify_of_tracking_or_locking(long, long, short)
 //.text:0053BA10 ; void __cdecl player_notify_vehicle_ejection_finished(long)
@@ -281,6 +316,9 @@ long __cdecl player_new(long player_array_index, game_player_options const* opti
 //.text:0053BFF0
 //.text:0053C020 ; void __cdecl player_rejoined_game(long,  game_player_options const *, bool)
 //.text:0053C070 ; void __cdecl player_reset(long, bool, bool,  game_player_options const *)
+void __cdecl player_reset(long player_index, bool initial, bool joined_in_progress, game_player_options const* options) {
+	INVOKE(0x0053C070, player_reset, player_index, initial, joined_in_progress, options);
+}
 //.text:0053C570
 //.text:0053C630
 //.text:0053C860

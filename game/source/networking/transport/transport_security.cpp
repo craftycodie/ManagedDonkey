@@ -93,11 +93,11 @@ bool __cdecl transport_secure_address_get_machine_id(s_transport_secure_address 
 	//return online_is_connected_to_live() && !XNetXnAddrToMachineId(secure_address, secure_machine_id);
 
 	// no idea what `XNetXnAddrToMachineId` actually does, so we make the machine id from the secure and insecure addresses
-	static s_transport_secure_identifier secure_identifier{};
-	static transport_address address{};
-	XNetXnAddrToInAddr(secure_address, &secure_identifier, &address);
+	//static s_transport_secure_identifier secure_identifier{};
+	//static transport_address address{};
+	//XNetXnAddrToInAddr(secure_address, &secure_identifier, &address);
 
-	*secure_machine_id = make_int64(secure_address->part0, address.ipv4_address);
+	*secure_machine_id = 0xFA00000000000000 | make_int64(secure_address->part0, secure_address->part0 & 0x0000FFFF);
 	return online_is_connected_to_live() && *secure_machine_id;
 }
 

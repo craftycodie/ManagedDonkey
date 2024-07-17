@@ -9,6 +9,7 @@
 #include "networking/messages/network_messages_session_membership.hpp"
 #include "networking/session/network_managed_session.hpp"
 #include "networking/session/network_observer.hpp"
+#include <interface/user_interface_controller.hpp>
 
 bool __fastcall network_session_peer_request_player_desired_properties_update(c_network_session* _this, void* usused, long player_update_number, e_controller_index controller_index, s_player_configuration_from_client const* player_data_from_client, dword player_voice)
 {
@@ -58,10 +59,7 @@ bool c_network_session::is_host() const
 
 bool c_network_session::is_leader() const
 {
-	//return DECLFUNC(0x00434DB0, bool, __thiscall, c_network_session const*)(this);
-
-	//return m_session_membership.is_leader();
-	return m_session_membership.m_local_peer_index == m_session_membership.m_shared_network_membership.leader_peer_index;
+	return DECLFUNC(0x00434DB0, bool, __thiscall, c_network_session const*)(this);
 }
 
 bool c_network_session::leaving_session() const
@@ -69,7 +67,7 @@ bool c_network_session::leaving_session() const
 	return DECLFUNC(0x00434E30, bool, __thiscall, c_network_session const*)(this);
 }
 
-bool c_network_session::channel_is_authoritative(c_network_channel* channel)
+bool __thiscall c_network_session::channel_is_authoritative(c_network_channel* channel)
 {
 	return DECLFUNC(0x0045A9E0, bool, __thiscall, c_network_session*, c_network_channel*)(this, channel);
 }
@@ -511,7 +509,7 @@ e_network_session_mode c_network_session::session_mode() const
 
 s_network_session_player* c_network_session::get_player(long player_index)
 {
-	ASSERT(!disconnected());
+	//ASSERT(!disconnected());
 
 	return &m_session_membership.m_shared_network_membership.players[player_index];
 }
@@ -548,12 +546,14 @@ bool c_network_session::peer_request_player_desired_properties_update(long playe
 
 	ASSERT(controller_index >= 0 && controller_index < k_number_of_controllers);
 	ASSERT(player_data_from_client);
+	auto controller = controller_get(controller_index);
 
 	if (!established())
 		return false;
 
 	s_player_configuration_for_player_properties player_data = { .client = *player_data_from_client };
 	update_player_data(&player_data);
+	player_data.host_partial.bungienet_user = g_user_interface_controller_globals.controller[controller_index].bungienet_user;
 
 	if (is_host())
 	{

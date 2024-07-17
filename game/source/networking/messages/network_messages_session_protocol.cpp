@@ -72,7 +72,9 @@ bool __cdecl c_network_message_join_refuse::decode(c_bitstream* packet, long mes
 
 bool __cdecl c_network_message_join_request::decode(c_bitstream* packet, long message_storage_size, void* message_storage)
 {
-	return INVOKE(0x004DCA00, decode, packet, message_storage_size, message_storage);
+	s_network_message_join_request* join_req = (s_network_message_join_request*)message_storage;
+	bool ret = INVOKE(0x004DCA00, decode, packet, message_storage_size, message_storage);
+	return ret;
 }
 
 bool __cdecl c_network_message_leave_acknowledge::decode(c_bitstream* packet, long message_storage_size, void* message_storage)
@@ -132,6 +134,7 @@ void __cdecl c_network_message_join_refuse::encode(c_bitstream* packet, long mes
 
 void __cdecl c_network_message_join_request::encode(c_bitstream* packet, long message_storage_size, void const* message_storage)
 {
+	s_network_message_join_request join_req = *((s_network_message_join_request*)message_storage);
 	INVOKE(0x004DCF10, encode, packet, message_storage_size, message_storage);
 }
 

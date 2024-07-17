@@ -1398,6 +1398,9 @@
     <ClCompile Include="source\networking\session\network_session_parameter_types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\networking\logic\life_cycle\life_cycle_handler_matchmaking_arbitration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="source\networking\logic\storage\network_http_request_cache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1411,6 +1414,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\cache\cache_file_codec_work.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\networking\logic\logic_matchmaking_seeker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\networking\logic\life_cycle\life_cycle_state_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\networking\logic\life_cycle\life_cycle_handler_matchmaking_find_and_assemble_match.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

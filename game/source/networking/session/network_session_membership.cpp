@@ -1,6 +1,8 @@
+#include "memory/module.hpp"
 #include "networking/session/network_session_membership.hpp"
-
 #include "networking/messages/network_messages_session_membership.hpp"
+#include "networking/session/network_session.hpp"
+#include "networking/logic/network_life_cycle.hpp"
 
 long c_network_session_membership::get_player_index_from_peer(long peer_index)
 {
@@ -55,6 +57,7 @@ long c_network_session_membership::get_peer_from_observer_channel(long observer_
 			;
 		}
 	}
+	c_console::write_line("donkey:matchmaking: get_peer_from_observer_channel for channel %d returned peer_index %d", observer_channel_index, peer_index);
 	return peer_index;
 }
 
@@ -122,3 +125,45 @@ void c_network_session_membership::set_player_properties(long player_index, long
 		increment_update();
 }
 
+const s_network_session_peer* c_network_session_membership::get_peer(long peer_index) const {
+	return &(this->m_shared_network_membership.peers[peer_index]);
+}
+
+bool c_network_session_membership::peer_property_flag_test(int test_type, int flag) const {
+	int peer_index;
+	bool is_valid_peer_type;
+
+	for (peer_index = 0; peer_index < 16; ++peer_index)
+	{
+		if (this->is_peer_valid(peer_index))
+		{
+			const s_network_session_peer* peer = this->get_peer(peer_index);
+			is_valid_peer_type = 1;
+			if (test_type)
+			{
+				if (test_type == 1)
+				{
+					if (this->host_peer_index() != peer_index)
+						is_valid_peer_type = 0;
+				}
+				else if (test_type < 3)
+				{
+					if (this->host_peer_index() == peer_index)
+						is_valid_peer_type = 0;
+				}
+				else {
+					ASSERT2("unreachable");
+				}
+			}
+			else
+			{
+				is_valid_peer_type = 1;
+			}
+			if (is_valid_peer_type && !((1 << flag) & peer->properties.flags))
+			{
+				return 0;
+			}
+		}
+	}
+	return 1;
+}

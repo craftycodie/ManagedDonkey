@@ -3,6 +3,8 @@
 #include "cseries/cseries.hpp"
 #include "memory/secure_signature.hpp"
 #include "networking/transport/transport_qos.hpp"
+#include <networking/logic/network_leaderboard.hpp>
+#include <networking/session/network_managed_session.hpp>
 
 struct s_game_hopper_picked_game
 {
@@ -26,9 +28,41 @@ struct s_matchmaking_quality_qos_sample
 };
 static_assert(sizeof(s_matchmaking_quality_qos_sample) == 0x40);
 
+struct s_matchmaking_session_search_query
+{
+	byte __data0[12];
+	int skill_min;
+	int skill_max;
+	byte __data[68];
+};
+
+struct s_online_session_search_parameters
+{
+	int search_query_id;
+	int controller_index;
+	int property_count;
+	int __unknownC;
+	s_online_property properties[20];
+	int context_count;
+	s_online_context contexts[6];
+	int __unknown224;
+};
+
 struct s_matchmaking_session_search
 {
-	byte __data[0x340];
+	byte __data0[4];
+	int search_start_time;
+	byte __data8[4];
+	int __unknownC;
+	byte __data10[4];
+	int search_end_time;
+	byte __data18[12];
+	int joinable_count;
+	byte __data28[64];
+	int join_fails[16];
+	byte __dataA8[24];
+	s_matchmaking_session_search_query search_query;
+	s_online_session_search_parameters search_parameters;
 };
 static_assert(sizeof(s_matchmaking_session_search) == 0x340);
 

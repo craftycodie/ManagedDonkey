@@ -152,7 +152,7 @@ private:
 	void __cdecl update_sort();
 	bool __cdecl update_sort_by_desirability();
 
-protected:
+private:
 	long m_sort_method;
 	long m_expected_qos_data_type;
 	c_flags<e_session_tracker_flags, byte, k_session_tracker_flags> m_flags;
@@ -194,4 +194,4 @@ extern bool __cdecl network_session_tracker_start(long tracker_sort_method, long
 extern void __cdecl network_session_tracker_stop();
 extern bool __cdecl network_session_tracker_track_session(char const* name, s_transport_session_description const* description);
 extern void __cdecl network_session_tracker_update();
-
+extern bool __cdecl network_session_tracker_track_session(char const* name, s_transport_session_description const* description);

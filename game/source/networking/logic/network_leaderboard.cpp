@@ -1,4 +1,5 @@
 #include "networking/logic/network_leaderboard.hpp"
+#include "memory/module.hpp"
 
 REFERENCE_DECLARE(0x0226B508, s_network_leaderboard_globals, network_leaderboard_globals);
 
@@ -31,6 +32,13 @@ void __cdecl network_leaderboard_destory()
 //.text:004D5FF0 ; e_leaderboard_statistic __cdecl network_leaderboard_get_statistic_by_column_id(e_online_leaderboard_column_id column_id, e_online_leaderboard_id leaderboard_id)
 //.text:004D6070 ; long sub_4D6070(qword xuid) // get valid query user index?
 //.text:004D60B0 ; e_network_leaderboard_write_status __cdecl network_leaderboard_get_write_status()
+
+int __cdecl network_leaderboard_get_write_status() {
+	c_console::write_line("donkey:matchmaking network_leaderboard_get_write_status returning completed.");
+	return 2;
+}
+HOOK_DECLARE(0x004D60B0, network_leaderboard_get_write_status);
+
 //.text:004D6130 ; bool __cdecl network_leaderboard_id_valid_for_query(e_online_leaderboard_id leaderboard_id)
 
 bool __cdecl network_leaderboard_initialize()
@@ -66,4 +74,7 @@ void __cdecl network_leaderboard_update()
 //.text:004D6B30 ; void __cdecl network_leaderboard_write_initial_stats(long managed_session_index, word hopper_identifier, bool is_ranked, bool team_game, long draw_probability, real beta, real tau, long experience_penalty_decrement, dword selection_time, game_player_options const* player_options)
 //.text:004D6CB0 ; void __cdecl network_leaderboard_write_stats(long managed_session_index, c_game_results const* game_results)
 //.text:004D6DC0 ; void __cdecl network_leaderboard_write_stats_internal(long managed_session_index, s_network_leaderboard_game_results const* game_results, s_network_leaderboard_player_game_results const* player_game_results, bool a4)
-
+void __cdecl network_leaderboard_write_stats_internal(long managed_session_index, s_network_leaderboard_game_results const* game_results, s_network_leaderboard_player_game_results const* player_game_results, bool a4) {
+	c_console::write_line("donkey:matchmaking network_leaderboard_write_stats_internal doing nothing");
+}
+HOOK_DECLARE(0x004D6DC0, network_leaderboard_write_stats_internal);

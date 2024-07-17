@@ -114,5 +114,8 @@ struct c_network_session_parameters
 	dword_flags m_flags;
 	dword m_initial_parameters_update_mask;
 	long : 32;
+
+	bool parameters_transmitted_to_peers(unsigned __int64);
+	unsigned __int64 __cdecl get_outstanding_parameter_update_mask_for_peer(long peer_index) const;
 };
 static_assert(sizeof(c_network_session_parameters) == 0xB7930);

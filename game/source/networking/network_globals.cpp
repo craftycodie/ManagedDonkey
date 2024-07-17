@@ -719,4 +719,3 @@ void __cdecl network_test_text_chat_directed(transport_address const* address, c
 		generate_event(_event_level_error, "networking:test: networking is not initialized");
 	}
 }
-
