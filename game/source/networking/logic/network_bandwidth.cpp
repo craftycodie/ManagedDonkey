@@ -1,4 +1,10 @@
+#include "memory/module.hpp"
+#include "networking/session/network_observer.hpp"
 #include "networking/logic/network_bandwidth.hpp"
+
+REFERENCE_DECLARE(0x019E8D28, s_network_bandwidth_globals, network_bandwidth_globals);
+
+HOOK_DECLARE(0x00455890, network_bandwidth_set_online_network_environment);
 
 long __cdecl network_bandwidth_compute_average(long sample_count, long const* samples)
 {
@@ -39,10 +45,16 @@ void __cdecl network_bandwidth_notify_live_service_qos_measurement(s_transport_q
     INVOKE(0x004557F0, network_bandwidth_notify_live_service_qos_measurement, qos_result);
 }
 
-void __cdecl network_bandwidth_set_online_network_environment(bool online_network_environment)
+void __cdecl network_bandwidth_set_online_network_environment(bool is_online)
 {
-    INVOKE(0x00455890, network_bandwidth_set_online_network_environment, online_network_environment);
+    //network_bandwidth_globals.observer->set_online_network_environment(is_online);
+
+    // These prevent players from spawning.
+    // MM TODO: Fix
+    //network_bandwidth_globals.online_network_environment = a2;
+    //network_bandwidth_update_estimate();
 }
+
 
 void __cdecl network_bandwidth_tracking_begin()
 {
@@ -63,4 +75,3 @@ void __cdecl network_bandwidth_update_estimate()
 {
     INVOKE(0x00455B40, network_bandwidth_update_estimate);
 }
-

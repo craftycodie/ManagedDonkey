@@ -18,6 +18,28 @@
 #include "networking/session/network_session_parameter_type_collection.hpp"
 #include "networking/session/network_session_parameters_generic.hpp"
 
+// need to rewrite multiplayer_game_is_playable to read our hopper.
+const byte is_playable_hopper_patch[] = { 0xE9, 0xA1, 0x01, 0x00, 0x00, 0x90 };
+DATA_PATCH_DECLARE(0x005496AF, skip_hopper_config_checks, is_playable_hopper_patch);
+
+const byte is_playable_online_patch[] = { 0x90, 0x90, 0x90, 0x90, 0x90 };
+DATA_PATCH_DECLARE(0x00549740, skip_player_online_checks, is_playable_online_patch);
+const byte fuck[] = { 0x2 };
+DATA_PATCH_DECLARE(0x004A5A8B, hacky_manifest_load_skip, fuck);
+const byte fuck2[] = { 0xE9, 0x82, 0x00, 0x00, 0x00, 0x90 };
+DATA_PATCH_DECLARE(0x00464AA0, downloader_manifest_skip_1, fuck2);
+
+// this return is broken.
+const byte composition_return_bytes[] = { 0x12 };
+DATA_PATCH_DECLARE(0x4D2921, composition_return, composition_return_bytes); // we need this
+
+// solo queue matchmaking hack?
+const byte players_established_patch_bytes[] = { 0xB0, 0x01 };
+DATA_PATCH_DECLARE(0x0045A406, players_established_return, players_established_patch_bytes); // not sure we need this
+
+const byte session_has_minimum_player_count_to_start_game_in_hopper_bytes[] = { 0xB0, 0x01 };
+//DATA_PATCH_DECLARE(0x0048DF19, session_has_minimum_player_count_to_start_game_in_hopper, session_has_minimum_player_count_to_start_game_in_hopper_bytes);
+
 HOOK_DECLARE(0x00545710, multiplayer_game_hopper_check_required_files);
 HOOK_DECLARE(0x00548250, multiplayer_game_hopper_get_current_hopper_identifier);
 HOOK_DECLARE(0x00549610, multiplayer_game_hopper_update);
@@ -51,11 +73,11 @@ void __cdecl initialize_fake_hopper(
 	HOOK_INVOKE(, initialize_fake_hopper, configuration_table, description_table, takehome_rumble_slayer_set, takehome_team_slayer_set);
 	// missed from initialize_fake_hopper?
 	configuration_table->hopper_configuration_count = 2;
-	configuration_table->hopper_configurations[0].hopper_name = "Head To Head";
+	configuration_table->hopper_configurations[0].hopper_name = "Donkey Test";
 	configuration_table->hopper_configurations[0].hopper_type = 0;
 	configuration_table->hopper_configurations[0].hopper_category = 1;
-	configuration_table->hopper_configurations[0].ffa.minimum_player_count = 2;
-	configuration_table->hopper_configurations[0].ffa.maximum_player_count = 2;
+	configuration_table->hopper_configurations[0].ffa.minimum_player_count = 3;
+	configuration_table->hopper_configurations[0].ffa.maximum_player_count = 3;
 	configuration_table->hopper_configurations[0].gather_give_up_seconds = 10;
 	configuration_table->hopper_configurations[0].chance_of_gathering[0] = 1;
 	configuration_table->hopper_configurations[0].veto_enabled = true;
@@ -115,7 +137,7 @@ HOOK_DECLARE(0x00548220, multiplayer_game_hopper_game_variant_load_status);
 //.text:00548240 ; c_game_variant const* __cdecl multiplayer_game_hopper_get_current_game_variant();
 c_game_variant const* __cdecl multiplayer_game_hopper_get_current_game_variant() {
 
-	game_engine_tag_defined_variant_get_built_in_variant(e_game_engine_type::_game_engine_type_slayer, 4, &game_variant);
+	game_engine_tag_defined_variant_get_built_in_variant(e_game_engine_type::_game_engine_type_slayer, 0, &game_variant);
 	//c_game_engine_slayer_variant* writable = game_variant.get_slayer_variant_writeable();
 	//return global_preferences_get()->preferences0.data.last_game_setup.get_multiplayer()->game_variant_settings.get_variant();
 
@@ -133,7 +155,7 @@ word __cdecl multiplayer_game_hopper_get_current_hopper_identifier() {
 
 //.text:00548260 ; c_map_variant const* __cdecl multiplayer_game_hopper_get_current_map_variant();
 c_map_variant const* __cdecl multiplayer_game_hopper_get_current_map_variant() {
-	map_variant.create_default(320);
+	map_variant.create_default(700);
 
 	return &map_variant;
 
@@ -388,30 +410,6 @@ int network_session_build_matchmaking_composition(c_network_session* session, vo
 
 	return result;
 }
-
-
-
-// need to rewrite multiplayer_game_is_playable to read our hopper.
-const byte is_playable_hopper_patch[] = { 0xE9, 0xA1, 0x01, 0x00, 0x00, 0x90 };
-DATA_PATCH_DECLARE(0x005496AF, skip_hopper_config_checks, is_playable_hopper_patch);
-
-const byte is_playable_online_patch[] = { 0x90, 0x90, 0x90, 0x90, 0x90 };
-DATA_PATCH_DECLARE(0x00549740, skip_player_online_checks, is_playable_online_patch);
-const byte fuck[] = { 0x2 };
-DATA_PATCH_DECLARE(0x004A5A8B, hacky_manifest_load_skip, fuck);
-const byte fuck2[] = { 0xE9, 0x82, 0x00, 0x00, 0x00, 0x90 };
-DATA_PATCH_DECLARE(0x00464AA0, downloader_manifest_skip_1, fuck2);
-
-// this return is broken.
-const byte composition_return_bytes[] = { 0x12 };
-DATA_PATCH_DECLARE(0x4D2921, composition_return, composition_return_bytes); // we need this
-
-// solo queue matchmaking hack?
-const byte players_established_patch_bytes[] = {0xB0, 0x01};
-DATA_PATCH_DECLARE(0x0045A406, players_established_return, players_established_patch_bytes); // not sure we need this
-
-const byte session_has_minimum_player_count_to_start_game_in_hopper_bytes[] = { 0xB0, 0x01 };
-//DATA_PATCH_DECLARE(0x0048DF19, session_has_minimum_player_count_to_start_game_in_hopper, session_has_minimum_player_count_to_start_game_in_hopper_bytes);
 
 e_session_game_start_error __cdecl multiplayer_game_is_playable(word hopper_identifier, bool is_matchmaking, bool check_hopper, c_network_session_membership const* session_membership, word* out_player_error_mask)
 {

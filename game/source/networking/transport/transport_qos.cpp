@@ -22,7 +22,7 @@ bool __cdecl transport_qos_get_result(long index, long target_index, s_transport
 	result->probes_received = 1;
 	result->probes_sent = 1;
 	return true;
-	return INVOKE(0x00434010, transport_qos_get_result, index, target_index, result);
+	//return INVOKE(0x00434010, transport_qos_get_result, index, target_index, result);
 }
 HOOK_DECLARE(0x00434010, transport_qos_get_result);
 
@@ -34,7 +34,7 @@ long __cdecl transport_qos_get_target_count(long index)
 e_transport_qos_target_status __cdecl transport_qos_get_target_status(long index, long target_index)
 {
 	return (e_transport_qos_target_status)5;
-	return INVOKE(0x00434030, transport_qos_get_target_status, index, target_index);
+	//return INVOKE(0x00434030, transport_qos_get_target_status, index, target_index);
 }
 HOOK_DECLARE(0x00434030, transport_qos_get_target_status);
 
@@ -46,7 +46,7 @@ void __cdecl transport_qos_initialize()
 bool __cdecl transport_qos_is_complete(long index)
 {
 	return true;
-	return INVOKE(0x00434050, transport_qos_is_complete, index);
+	//return INVOKE(0x00434050, transport_qos_is_complete, index);
 }
 HOOK_DECLARE(0x00434050, transport_qos_is_complete);
 
@@ -58,7 +58,7 @@ bool __cdecl transport_qos_listener_get_stats(s_transport_secure_identifier cons
 bool __cdecl transport_qos_listener_initiate(s_transport_secure_identifier const* secure_identifier)
 {
 	return true;
-	return INVOKE(0x00434070, transport_qos_listener_initiate, secure_identifier);
+	//return INVOKE(0x00434070, transport_qos_listener_initiate, secure_identifier);
 }
 HOOK_DECLARE(0x00434070, transport_qos_listener_initiate);
 
@@ -97,7 +97,7 @@ void __cdecl transport_qos_startup()
 long __cdecl transport_qos_target_new(e_transport_qos_type type, long target_count, s_transport_qos_target const* target, long a4)
 {
 	return 1;
-	return INVOKE(0x004340E0, transport_qos_target_new, type, target_count, target, a4);
+	//return INVOKE(0x004340E0, transport_qos_target_new, type, target_count, target, a4);
 }
 HOOK_DECLARE(0x004340E0, transport_qos_target_new);
 

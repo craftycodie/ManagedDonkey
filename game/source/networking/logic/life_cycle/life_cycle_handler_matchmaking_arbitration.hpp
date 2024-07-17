@@ -23,11 +23,5 @@ struct c_life_cycle_state_handler_matchmaking_arbitration :
 	void __thiscall update();
 	void __thiscall mark_arbitration_complete();
 
-	//void __thiscall update_();
 };
 static_assert(sizeof(c_life_cycle_state_handler_matchmaking_arbitration) == 0x1C0);
-
-
-extern bool __cdecl player_spawn(long, union real_point3d const*, float const*);
-extern void __cdecl player_positions_initialize_for_new_structure_bsp();
-extern void __cdecl players_update_activation();

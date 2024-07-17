@@ -342,9 +342,8 @@ s_command const k_registered_commands[] =
 		COMMAND_CALLBACK_REGISTER(levels_add_fake_map_multi, 1, "<string>", "<scenario_path> adds a fake map for multiplayer\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 		COMMAND_CALLBACK_REGISTER(levels_add_map_multi, 2, "<long> <string>", "<map_id> <scenario_path> adds a map with the specified map id for multiplayer\r\nNETWORK SAFE: Unknown, assumed unsafe"),
 
-		COMMAND_CALLBACK_REGISTER(mm_print_session, 1, "<string>", "<ip_address> print session details for another player to join, provide the IP of the other player\r\nNETWORK SAFE: Yes"),
+		COMMAND_CALLBACK_REGISTER(mm_print_session, 0, "", "print session details for another player to join\r\nNETWORK SAFE: Yes"),
 		COMMAND_CALLBACK_REGISTER(mm_find_session, 1, "<string>", "<session_string> print session details for another player to join\r\nNETWORK SAFE: Yes"),
-		COMMAND_CALLBACK_REGISTER(mm_debug, 0, "", ""),
 };
 
 extern void command_tokenize(char const* input, tokens_t& tokens, long* token_count);

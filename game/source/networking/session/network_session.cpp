@@ -11,32 +11,6 @@
 #include "networking/session/network_observer.hpp"
 #include <interface/user_interface_controller.hpp>
 
-//void __cdecl network_session_calculate_peer_connectivity(c_network_session* a1, s_network_session_peer_connectivity* a2) {
-//	// wait, that's illegal
-//	session_interface_globals.has_live_connection_info = true;
-//	session_interface_globals.qos_result.bandwidth_downstream_bps = 20 * 1024;
-//	session_interface_globals.qos_result.bandwidth_upstream_bps = 20 * 1024;
-//	session_interface_globals.bandwidth_bps = 200 * 1024;
-//
-//
-//	a2->peer_connectivity_mask = 1;
-//	//a2->peer_latency_est = 20;
-//	//a2->peer_latency_max = 100;
-//	//a2->peer_latency_min = 10;
-//	a2->peer_probe_mask = 1;
-//}
-//HOOK_DECLARE(0x4356A0, network_session_calculate_peer_connectivity);
-//
-//int sub_4464B0(void*) {
-//	return 20 * 1024;
-//}
-//HOOK_DECLARE(0x4464B0, sub_4464B0);
-//
-//bool sub_4464D0(void*) {
-//	return 1;
-//}
-//HOOK_DECLARE(0x4464D0, sub_4464D0);
-
 bool __fastcall network_session_peer_request_player_desired_properties_update(c_network_session* _this, void* usused, long player_update_number, e_controller_index controller_index, s_player_configuration_from_client const* player_data_from_client, dword player_voice)
 {
 	return _this->peer_request_player_desired_properties_update(player_update_number, controller_index, player_data_from_client, player_voice);
@@ -85,10 +59,7 @@ bool c_network_session::is_host() const
 
 bool c_network_session::is_leader() const
 {
-	//return DECLFUNC(0x00434DB0, bool, __thiscall, c_network_session const*)(this);
-
-	//return m_session_membership.is_leader();
-	return m_session_membership.m_local_peer_index == m_session_membership.m_shared_network_membership.leader_peer_index;
+	return DECLFUNC(0x00434DB0, bool, __thiscall, c_network_session const*)(this);
 }
 
 bool c_network_session::leaving_session() const
@@ -96,64 +67,9 @@ bool c_network_session::leaving_session() const
 	return DECLFUNC(0x00434E30, bool, __thiscall, c_network_session const*)(this);
 }
 
-HOOK_DECLARE_CLASS_MEMBER(0x0045A9E0, c_network_session, channel_is_authoritative);
 bool __thiscall c_network_session::channel_is_authoritative(c_network_channel* channel)
 {
-	//return DECLFUNC(0x0045A9E0, bool, __thiscall, c_network_session*, c_network_channel*)(this, channel);
-
-	int observer_channel_index = -2;
-	int peer_from_observer_channel = -2;
-
-	m_local_state = this->m_local_state;
-	bool result = (m_local_state > _network_session_state_peer_join_abort
-		|| m_local_state == _network_session_state_peer_joining)
-		&& m_local_state != _network_session_state_host_established
-		&& m_local_state != _network_session_state_host_disband
-		&& (observer_channel_index = this->m_observer->observer_channel_find_by_network_channel(
-			this->m_session_index,
-			channel),
-			peer_from_observer_channel = this->m_session_membership.get_peer_from_observer_channel(
-				observer_channel_index),
-			peer_from_observer_channel != -1)
-		&& peer_from_observer_channel == this->m_session_membership.m_shared_network_membership.host_peer_index;
-
-	if (!result) {
-		c_console::write_line("donkey:matchmaking: channel_is_authoritative returning false. local_state = %d, session_index = %d, observer_channel_index = %d, peer_from_observer_channel = %d, host_peer_index = %d",
-			m_local_state, this->m_session_index, observer_channel_index, peer_from_observer_channel, this->m_session_membership.m_shared_network_membership.host_peer_index);
-		c_console::write_line("donkey:matchmaking: More info... session_index = %d, m_session_class = %d, m_session_type = %d",
-			this->m_session_index, this->m_session_class.get(), this->m_session_type.get());
-		c_console::write_line("donkey:matchmaking: Even more info... channel state = %d %s",
-			channel->get_state(), channel->get_state_string(channel->get_state()));
-
-		observer_channel_index = this->m_observer->observer_channel_find_by_network_channel(
-			0,
-			channel);
-		peer_from_observer_channel = this->m_session_membership.get_peer_from_observer_channel(
-			observer_channel_index);
-
-		c_console::write_line("donkey:matchmaking: Session 0 authoritative? %d",
-			peer_from_observer_channel == this->m_session_membership.m_shared_network_membership.host_peer_index);
-
-		observer_channel_index = this->m_observer->observer_channel_find_by_network_channel(
-			1,
-			channel);
-		peer_from_observer_channel = this->m_session_membership.get_peer_from_observer_channel(
-			observer_channel_index);
-
-		c_console::write_line("donkey:matchmaking: Session 1 authoritative? %d",
-			peer_from_observer_channel == this->m_session_membership.m_shared_network_membership.host_peer_index);
-
-		observer_channel_index = this->m_observer->observer_channel_find_by_network_channel(
-			2,
-			channel);
-		peer_from_observer_channel = this->m_session_membership.get_peer_from_observer_channel(
-			observer_channel_index);
-
-		c_console::write_line("donkey:matchmaking: Session 2 authoritative? %d",
-			peer_from_observer_channel == this->m_session_membership.m_shared_network_membership.host_peer_index);
-	}
-
-	return result;
+	return DECLFUNC(0x0045A9E0, bool, __thiscall, c_network_session*, c_network_channel*)(this, channel);
 }
 
 void c_network_session::destroy_session()

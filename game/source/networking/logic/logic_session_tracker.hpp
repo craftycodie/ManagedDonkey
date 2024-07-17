@@ -152,7 +152,7 @@ private:
 	void __cdecl update_sort();
 	bool __cdecl update_sort_by_desirability();
 
-public:
+private:
 	long m_sort_method;
 	long m_expected_qos_data_type;
 	c_flags<e_session_tracker_flags, byte, k_session_tracker_flags> m_flags;

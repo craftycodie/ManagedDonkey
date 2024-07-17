@@ -2098,6 +2098,11 @@ callback_result_t mm_print_session_callback(void const* userdata, long token_cou
 
 	// id:address:ip:port
 
+	if (life_cycle_globals.manager.m_group_session->m_managed_session_index == -1) {
+		result.print_line("start searching first.");
+		return result;
+	}
+
 	s_transport_session_description& session_description = online_session_manager_globals.managed_sessions[life_cycle_globals.manager.m_group_session->m_managed_session_index].desired_online_session_state.description;
 	transport_address external_address;
 
@@ -2115,20 +2120,7 @@ callback_result_t mm_print_session_callback(void const* userdata, long token_cou
 		external_address.ina.bytes[1],
 		external_address.ina.bytes[0]);
 
-	//const char* ip_string = tokens[1]->get_string();
-	//dword parsed_ip = parse_ip_string(ip_string);
-	//transport_address transport_addr;
-	//transport_addr.ipv4_address = parsed_ip;
-	//transport_addr.port = 11774;
-	//memcpy(&transport_addr.ina, &parsed_ip, sizeof(transport_addr.ina));
-	//transport_addr.address_length = sizeof(transport_addr.ina);
-
-	// add the other player
-	//XNetAddEntry(&transport_addr, &session_description.address, &session_description.id);
-
-	c_console::write_line("donkey-matchmaking: session details [%s:%s:%s:%s]", id, address, ip, port);
-	c_console::write_line("mm_find_session %s:%s:%s:%s", id, address, ip, port);
-
+	result.append_print_line("mm_find_session %s:%s:%s:%s", id, address, ip, port);
 	return result;
 }
 
@@ -2169,112 +2161,10 @@ callback_result_t mm_find_session_callback(void const* userdata, long token_coun
 	static s_transport_session_description description = {
 	.id = parsed_id,
 	.address = parsed_address,
-	.key = {
-		//0x77777777,
-		//{ 0x7777, 0x7777 },
-		//{ 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77, 0x77 }
-	}
+	.key = {}
 	};
 
 	network_session_tracker_track_session("UNKNOWN", &description);
-
-	//user_interface_join_remote_session(true, 2, &description.id, &description.address, &description.key);
-
-	session_tracker_globals.session_tracker.m_sessions[0].qos_received[0] = true;
-	session_tracker_globals.session_tracker.m_sessions[0].qos_received[1] = true;
-
-	return result;
-}
-
-
-callback_result_t mm_debug_callback(void const* userdata, long token_count, tokens_t const tokens)
-{
-	COMMAND_CALLBACK_PARAMETER_CHECK;
-
-	c_network_session* session;
-	s_online_managed_session* managed_session;
-	const char* id;
-	s_network_session_player* player;
-
-	TLS_DATA_GET_VALUE_REFERENCE(player_data);
-
-	c_data_iterator<player_datum> player_iterator;
-
-
-	player_iterator.begin(*player_data);
-	while (player_iterator.next())
-	{
-		player_datum* player = player_iterator.get_datum();
-		c_console::write_line("player %ls / %ls team_index %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), player->configuration.host.team_index);
-		c_console::write_line("player_identifier = %I64u, machine = %hd, identifier = %hd, machine_user_index = %hd, flags = %d, unit_index = %d", *(qword*)&player->player_identifier, player->machine_index, player->identifier, player->machine_user_index, player->flags, player->unit_index);
-
-
-		//if (player->flags == 8)
-		//	player->flags = 9;
-	}
-
-
-	c_console::write_line("Managed sessions lets gooooooooooooooo");
-	c_console::write_line("Active Squad Session");
-	session = life_cycle_globals.manager.get_active_squad_session();
-	if (session->m_managed_session_index != NONE) {
-		managed_session = &online_session_manager_globals.managed_sessions[session->m_managed_session_index];
-		id = managed_session_get_id_string(session->m_managed_session_index);
-		c_console::write_line("id: %s", id);
-		if (player = session->get_player(0)) c_console::write_line("player 0: %ls %ls %I64u %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), *(qword*)&player->player_identifier, player->peer_index);
-		if (player = session->get_player(1)) c_console::write_line("player 1: %ls %ls %I64u %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), *(qword*)&player->player_identifier, player->peer_index);
-		if (player = session->get_player(2)) c_console::write_line("player 2: %ls %ls %I64u %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), *(qword*)&player->player_identifier, player->peer_index);
-	}
-	else {
-		c_console::write_line("Empty");
-	}
-
-	c_console::write_line("Group Session");
-	session = life_cycle_globals.manager.get_group_session();
-	if (session->m_managed_session_index != NONE) {
-		managed_session = &online_session_manager_globals.managed_sessions[session->m_managed_session_index];
-		id = managed_session_get_id_string(session->m_managed_session_index);
-		c_console::write_line("id: %s", id);
-		if (player = session->get_player(0)) c_console::write_line("player 0: %ls %ls %I64u %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), *(qword*)&player->player_identifier, player->peer_index);
-		if (player = session->get_player(1)) c_console::write_line("player 1: %ls %ls %I64u %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), *(qword*)&player->player_identifier, player->peer_index);
-		if (player = session->get_player(2)) c_console::write_line("player 2: %ls %ls %I64u %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), *(qword*)&player->player_identifier, player->peer_index);
-	}
-	else {
-		c_console::write_line("Empty");
-	}
-
-	c_console::write_line("Target Session");
-	session = life_cycle_globals.manager.get_target_session();
-	if (session->m_managed_session_index != NONE) {
-		managed_session = &online_session_manager_globals.managed_sessions[session->m_managed_session_index];
-		id = managed_session_get_id_string(session->m_managed_session_index);
-		c_console::write_line("id: %s", id);
-		if (player = session->get_player(0)) c_console::write_line("player 0: %ls %ls %I64u %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), *(qword*)&player->player_identifier, player->peer_index);
-		if (player = session->get_player(1)) c_console::write_line("player 1: %ls %ls %I64u %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), *(qword*)&player->player_identifier, player->peer_index);
-		if (player = session->get_player(2)) c_console::write_line("player 2: %ls %ls %I64u %d", player->configuration.client.desired_name.get_string(), player->configuration.host.name.get_string(), *(qword*)&player->player_identifier, player->peer_index);
-	}
-	else {
-		c_console::write_line("Empty");
-	}
-
-	c_console::write_line("XNet Entries");
-	char address[255];
-	c_console::write_line("entry 1 = %s %s %s", transport_secure_identifier_get_string(&xnet_mapping[0].secure_identifier), transport_secure_address_to_string(&xnet_mapping[0].secure_address, address, 255, false, false), transport_address_get_string(&xnet_mapping[0].address));
-	c_console::write_line("entry 2 = %s %s %s", transport_secure_identifier_get_string(&xnet_mapping[1].secure_identifier), transport_secure_address_to_string(&xnet_mapping[1].secure_address, address, 255, false, false), transport_address_get_string(&xnet_mapping[1].address));
-	c_console::write_line("entry 3 = %s %s %s", transport_secure_identifier_get_string(&xnet_mapping[2].secure_identifier), transport_secure_address_to_string(&xnet_mapping[2].secure_address, address, 255, false, false), transport_address_get_string(&xnet_mapping[2].address));
-
-	qword machine_id;
-	transport_secure_address_get_machine_id(&xnet_mapping[0].secure_address, &machine_id);
-	c_console::write_line("Machine ID 1 %I64u", machine_id);
-	transport_secure_address_get_machine_id(&xnet_mapping[1].secure_address, &machine_id);
-	c_console::write_line("Machine ID 2 %I64u", machine_id);
-	transport_secure_address_get_machine_id(&xnet_mapping[2].secure_address, &machine_id);
-	c_console::write_line("Machine ID 3 %I64u", machine_id);
-
-	s_transport_secure_address my_address;
-	transport_secure_address_get(&my_address);
-	transport_secure_address_get_machine_id(&my_address, &machine_id);
-	c_console::write_line("Local address & machine %s %I64u", transport_secure_address_to_string(&my_address, address, 255, false, false), machine_id);
 
 	return result;
 }
